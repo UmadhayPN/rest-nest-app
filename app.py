@@ -8,6 +8,44 @@ import time
 st.set_page_config(page_title="Rest Nest", layout="wide")
 
 # ---------------------------
+# CUSTOM CSS
+# ---------------------------
+st.markdown("""
+<style>
+body {
+    background-color: black;
+    color: #00ff00;
+}
+
+/* Bottom navigation bar */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #111;
+    padding: 12px 0;
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid #333;
+    z-index: 1000;
+}
+
+.bottom-nav button {
+    background: none;
+    border: none;
+    color: #00ff00;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.bottom-nav button:hover {
+    color: white;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# ---------------------------
 # LOAD DATASET
 # ---------------------------
 @st.cache_data
@@ -24,16 +62,7 @@ if "loaded" not in st.session_state:
 
 if not st.session_state.loaded:
     st.markdown(
-        """
-        <style>
-        body {
-            background-color: black;
-        }
-        </style>
-        <h1 style='color: #00ff00; text-align: center; margin-top: 200px;'>
-            Rest Nest
-        </h1>
-        """,
+        "<h1 style='text-align:center; margin-top:200px;'>Rest Nest</h1>",
         unsafe_allow_html=True
     )
     time.sleep(2)
@@ -41,30 +70,17 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# BOTTOM NAVIGATION
+# PAGE STATE
 # ---------------------------
-st.markdown("---")
-
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    home_btn = st.button("🏠 Home")
-
-with col2:
-    search_btn = st.button("🔍 Search")
-
-with col3:
-    settings_btn = st.button("⚙️ Settings")
-
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
-if home_btn:
-    st.session_state.page = "Home"
-elif search_btn:
-    st.session_state.page = "Search"
-elif settings_btn:
-    st.session_state.page = "Settings"
+# ---------------------------
+# HANDLE BOTTOM NAV CLICKS
+# ---------------------------
+query_params = st.query_params
+if "nav" in query_params:
+    st.session_state.page = query_params["nav"]
 
 # ---------------------------
 # HOME PAGE
@@ -85,8 +101,16 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Search":
     st.header("🔍 Search Houses")
 
-    location = st.selectbox("Select Location", ["All"] + list(data["location"].unique()))
-    house_type = st.selectbox("Type", ["All", "Rent", "Sale"])
+    location = st.selectbox(
+        "Location",
+        ["All"] + list(data["location"].unique())
+    )
+
+    house_type = st.selectbox(
+        "Type",
+        ["All", "Rent", "Sale"]
+    )
+
     price_range = st.slider(
         "Price Range",
         int(data["price"].min()),
@@ -126,10 +150,26 @@ elif st.session_state.page == "Settings":
 
     st.subheader("❓ Get Help")
     st.write("Email: support@restnest.com")
-    st.write("FAQs coming soon")
 
     st.subheader("🚪 Log Out")
     if st.button("Log Out"):
         st.session_state.loaded = False
         st.rerun()
 
+# ---------------------------
+# SPACE FOR BOTTOM NAV
+# ---------------------------
+st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+
+# ---------------------------
+# BOTTOM NAVIGATION BAR
+# ---------------------------
+st.markdown("""
+<div class="bottom-nav">
+    <form>
+        <button name="nav" value="Home">🏠 Home</button>
+        <button name="nav" value="Search">🔍 Search</button>
+        <button name="nav" value="Settings">⚙️ Settings</button>
+    </form>
+</div>
+""", unsafe_allow_html=True)
