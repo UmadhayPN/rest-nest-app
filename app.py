@@ -38,7 +38,7 @@ if not st.session_state.loaded:
     )
     time.sleep(2)
     st.session_state.loaded = True
-    st.experimental_rerun()
+    st.rerun()
 
 # ---------------------------
 # BOTTOM NAVIGATION
@@ -131,4 +131,5 @@ elif st.session_state.page == "Settings":
     st.subheader("🚪 Log Out")
     if st.button("Log Out"):
         st.session_state.loaded = False
-        st.experimental_rerun()
+        st.rerun()
+
