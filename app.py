@@ -17,18 +17,13 @@ body {
     color: black;
 }
 
-input {
-    background-color: #f5f5f5 !important;
-    color: black !important;
-}
-
 /* Fixed bottom navigation */
 .nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #ffffff;
+    background-color: white;
     padding: 10px 0;
     border-top: 1px solid #ccc;
     z-index: 999;
@@ -46,7 +41,7 @@ def load_data():
 data = load_data()
 
 # ---------------------------
-# SESSION STATES
+# SESSION STATE INIT
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
@@ -62,7 +57,7 @@ if "page" not in st.session_state:
 # ---------------------------
 if not st.session_state.loaded:
     st.markdown(
-        "<h1 style='text-align:center; margin-top:200px; color:black;'>Rest Nest</h1>",
+        "<h1 style='text-align:center; margin-top:200px;'>Rest Nest</h1>",
         unsafe_allow_html=True
     )
     time.sleep(2)
@@ -70,10 +65,10 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# LOGIN SCREEN
+# LOGIN SCREEN (NO NAV HERE)
 # ---------------------------
 if not st.session_state.logged_in:
-    st.markdown("<h2 style='text-align:center; color:black;'>Login</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center;'>Login</h2>", unsafe_allow_html=True)
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -85,10 +80,11 @@ if not st.session_state.logged_in:
         else:
             st.error("Invalid username or password")
 
+    # STOP APP HERE (NO NAV BAR)
     st.stop()
 
 # ---------------------------
-# MAIN CONTENT
+# MAIN CONTENT (AFTER LOGIN)
 # ---------------------------
 if st.session_state.page == "Home":
     st.header("🏠 Recommended Houses")
@@ -103,15 +99,8 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Search":
     st.header("🔍 Search Houses")
 
-    location = st.selectbox(
-        "Location",
-        ["All"] + list(data["location"].unique())
-    )
-
-    house_type = st.selectbox(
-        "Type",
-        ["All", "Rent", "Sale"]
-    )
+    location = st.selectbox("Location", ["All"] + list(data["location"].unique()))
+    house_type = st.selectbox("Type", ["All", "Rent", "Sale"])
 
     price_range = st.slider(
         "Price Range",
@@ -146,39 +135,37 @@ elif st.session_state.page == "Settings":
     st.subheader("👤 Profile")
     st.write("Username: admin")
     st.write("Email: admin@restnest.com")
-    st.write("Contact #: 09XXXXXXXXX")
 
     st.subheader("❓ Get Help")
     st.write("support@restnest.com")
 
-    st.subheader("🚪 Log Out")
-    if st.button("Log Out"):
+    if st.button("🚪 Log Out"):
         st.session_state.logged_in = False
         st.session_state.page = "Home"
         st.rerun()
 
 # ---------------------------
-# SPACE SO CONTENT IS NOT HIDDEN
+# SPACE SO CONTENT IS NOT COVERED
 # ---------------------------
-st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
+st.markdown("<br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# FIXED BOTTOM NAVIGATION
+# FIXED BOTTOM NAV (ONLY AFTER LOGIN)
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🏠 Home", key="nav_home"):
+    if st.button("🏠 Home"):
         st.session_state.page = "Home"
 
 with col2:
-    if st.button("🔍 Search", key="nav_search"):
+    if st.button("🔍 Search"):
         st.session_state.page = "Search"
 
 with col3:
-    if st.button("⚙️ Settings", key="nav_settings"):
+    if st.button("⚙️ Settings"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
