@@ -104,21 +104,11 @@ elif st.session_state.page == "Settings":
 # ---------------------------
 # PUSH NAV TO BOTTOM
 # ---------------------------
-st.markdown("<br><br><br><br><br><br>", unsafe_allow_html=True)
-
-# ---------------------------
-# BOTTOM NAV (STABLE)
-# ---------------------------
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    if st.button("🏠 Home", use_container_width=True):
-        st.session_state.page = "Home"
-
-with col2:
-    if st.button("🔍 Search", use_container_width=True):
-        st.session_state.page = "Search"
-
-with col3:
-    if st.button("⚙️ Settings", use_container_width=True):
-        st.session_state.page = "Settings"
+st.markdown("""
+<div class="bottom-nav">
+    <form>
+        <button name="nav" value="Home">🏠 Home</button>
+        <button name="nav" value="Search">🔍 Search</button>
+        <button name="nav" value="Settings">⚙️ Settings</button>
+    </form>
+</div>
