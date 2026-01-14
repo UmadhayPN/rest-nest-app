@@ -22,30 +22,16 @@ input {
     color: #00ff00 !important;
 }
 
-/* Bottom navigation bar */
-.bottom-nav {
+/* Fixed bottom navigation bar */
+.nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     background-color: #111;
-    padding: 12px 0;
-    display: flex;
-    justify-content: space-around;
+    padding: 10px 0;
     border-top: 1px solid #333;
     z-index: 1000;
-}
-
-.bottom-nav button {
-    background: none;
-    border: none;
-    color: #00ff00;
-    font-size: 18px;
-    cursor: pointer;
-}
-
-.bottom-nav button:hover {
-    color: white;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -92,7 +78,6 @@ if not st.session_state.logged_in:
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
 
-    # Dummy credentials (you can change these)
     if st.button("Log In"):
         if username == "admin" and password == "1234":
             st.session_state.logged_in = True
@@ -100,17 +85,10 @@ if not st.session_state.logged_in:
         else:
             st.error("Invalid username or password")
 
-    st.stop()  # STOP HERE IF NOT LOGGED IN
+    st.stop()  # IMPORTANT: stop app here if not logged in
 
 # ---------------------------
-# HANDLE BOTTOM NAV CLICKS
-# ---------------------------
-query_params = st.query_params
-if "nav" in query_params:
-    st.session_state.page = query_params["nav"]
-
-# ---------------------------
-# HOME PAGE
+# MAIN CONTENT
 # ---------------------------
 if st.session_state.page == "Home":
     st.header("🏠 Recommended Houses")
@@ -122,9 +100,6 @@ if st.session_state.page == "Home":
         st.write(f"💰 Price: ₱{row['price']:,}")
         st.markdown("---")
 
-# ---------------------------
-# SEARCH PAGE
-# ---------------------------
 elif st.session_state.page == "Search":
     st.header("🔍 Search Houses")
 
@@ -165,19 +140,13 @@ elif st.session_state.page == "Search":
         st.write(f"{row['location']} | {row['type']} | ₱{row['price']:,}")
         st.markdown("---")
 
-# ---------------------------
-# SETTINGS PAGE
-# ---------------------------
 elif st.session_state.page == "Settings":
     st.header("⚙️ Settings")
 
     st.subheader("👤 Profile")
-    st.write("Username: ")
+    st.write("Username: admin")
     st.write("Email: admin@restnest.com")
     st.write("Contact #: 09XXXXXXXXX")
-
-    st.subheader("📤 Post Listings")
-    st.write("Feature coming soon")
 
     st.subheader("❓ Get Help")
     st.write("support@restnest.com")
@@ -194,16 +163,21 @@ elif st.session_state.page == "Settings":
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION BAR
+# BOTTOM NAVIGATION (STREAMLIT BUTTONS)
 # ---------------------------
-st.markdown("""
-<div class="bottom-nav">
-    <form>
-        <button name="nav" value="Home">🏠 Home</button>
-        <button name="nav" value="Search">🔍 Search</button>
-        <button name="nav" value="Settings">⚙️ Settings</button>
-    </form>
-</div>
-""", unsafe_allow_html=True)
+st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+col1, col2, col3 = st.columns(3)
 
+with col1:
+    if st.button("🏠 Home", key="home_btn"):
+        st.session_state.page = "Home"
 
+with col2:
+    if st.button("🔍 Search", key="search_btn"):
+        st.session_state.page = "Search"
+
+with col3:
+    if st.button("⚙️ Settings", key="settings_btn"):
+        st.session_state.page = "Settings"
+
+st.markdown('</div>', unsafe_allow_html=True)
