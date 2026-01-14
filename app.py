@@ -241,16 +241,21 @@ st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 # ---------------------------
 # ANDROID-STYLE BOTTOM NAV
 # ---------------------------
+# ---------------------------
+# ANDROID-STYLE BOTTOM NAV
+# ---------------------------
 nav_col1, nav_col2, nav_col3 = st.columns(3)
 
 with nav_col1:
-    if st.button("🏠 Home", use_container_width=True):
+    if st.button("🏠 Home", key="nav_home", use_container_width=True):
         st.session_state.page = "Home"
 
 with nav_col2:
-    if st.button("🔍 Search", use_container_width=True):
+    if st.button("🔍 Search", key="nav_search", use_container_width=True):
         st.session_state.page = "Search"
 
 with nav_col3:
-    if st.button("⚙️ Settings", use_container_width=True):
+    if st.button("⚙️ Settings", key="nav_settings", use_container_width=True):
         st.session_state.page = "Settings"
+
+
