@@ -172,7 +172,7 @@ elif st.session_state.page == "Settings":
     st.header("⚙️ Settings")
 
     st.subheader("👤 Profile")
-    st.write("Username: admin")
+    st.write("Username: ", username)
     st.write("Email: admin@restnest.com")
     st.write("Contact #: 09XXXXXXXXX")
 
@@ -205,3 +205,4 @@ st.markdown("""
     </form>
 </div>
 """, unsafe_allow_html=True)
+
