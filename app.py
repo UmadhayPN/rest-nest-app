@@ -13,25 +13,25 @@ st.set_page_config(page_title="Rest Nest", layout="wide")
 st.markdown("""
 <style>
 body {
-    background-color: black;
-    color: #00ff00;
+    background-color: white;
+    color: black;
 }
 
 input {
-    background-color: #111 !important;
-    color: #00ff00 !important;
+    background-color: #f5f5f5 !important;
+    color: black !important;
 }
 
-/* Fixed bottom navigation bar */
+/* Fixed bottom navigation */
 .nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #111;
+    background-color: #ffffff;
     padding: 10px 0;
-    border-top: 1px solid #333;
-    z-index: 1000;
+    border-top: 1px solid #ccc;
+    z-index: 999;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -62,7 +62,7 @@ if "page" not in st.session_state:
 # ---------------------------
 if not st.session_state.loaded:
     st.markdown(
-        "<h1 style='text-align:center; margin-top:200px;'>Rest Nest</h1>",
+        "<h1 style='text-align:center; margin-top:200px; color:black;'>Rest Nest</h1>",
         unsafe_allow_html=True
     )
     time.sleep(2)
@@ -73,7 +73,7 @@ if not st.session_state.loaded:
 # LOGIN SCREEN
 # ---------------------------
 if not st.session_state.logged_in:
-    st.markdown("<h2 style='text-align:center;'>Login</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='text-align:center; color:black;'>Login</h2>", unsafe_allow_html=True)
 
     username = st.text_input("Username")
     password = st.text_input("Password", type="password")
@@ -85,7 +85,7 @@ if not st.session_state.logged_in:
         else:
             st.error("Invalid username or password")
 
-    st.stop()  # IMPORTANT: stop app here if not logged in
+    st.stop()
 
 # ---------------------------
 # MAIN CONTENT
@@ -158,26 +158,27 @@ elif st.session_state.page == "Settings":
         st.rerun()
 
 # ---------------------------
-# SPACE FOR BOTTOM NAV
+# SPACE SO CONTENT IS NOT HIDDEN
 # ---------------------------
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION (STREAMLIT BUTTONS)
+# FIXED BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🏠 Home", key="home_btn"):
+    if st.button("🏠 Home", key="nav_home"):
         st.session_state.page = "Home"
 
 with col2:
-    if st.button("🔍 Search", key="search_btn"):
+    if st.button("🔍 Search", key="nav_search"):
         st.session_state.page = "Search"
 
 with col3:
-    if st.button("⚙️ Settings", key="settings_btn"):
+    if st.button("⚙️ Settings", key="nav_settings"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
