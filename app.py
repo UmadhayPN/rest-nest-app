@@ -17,6 +17,11 @@ body {
     color: #00ff00;
 }
 
+input {
+    background-color: #111 !important;
+    color: #00ff00 !important;
+}
+
 /* Bottom navigation bar */
 .bottom-nav {
     position: fixed;
@@ -55,11 +60,20 @@ def load_data():
 data = load_data()
 
 # ---------------------------
-# LOADING SCREEN
+# SESSION STATES
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
 
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
+
+# ---------------------------
+# LOADING SCREEN
+# ---------------------------
 if not st.session_state.loaded:
     st.markdown(
         "<h1 style='text-align:center; margin-top:200px;'>Rest Nest</h1>",
@@ -70,10 +84,23 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# PAGE STATE
+# LOGIN SCREEN
 # ---------------------------
-if "page" not in st.session_state:
-    st.session_state.page = "Home"
+if not st.session_state.logged_in:
+    st.markdown("<h2 style='text-align:center;'>Login</h2>", unsafe_allow_html=True)
+
+    username = st.text_input("Username")
+    password = st.text_input("Password", type="password")
+
+    # Dummy credentials (you can change these)
+    if st.button("Log In"):
+        if username == "admin" and password == "1234":
+            st.session_state.logged_in = True
+            st.rerun()
+        else:
+            st.error("Invalid username or password")
+
+    st.stop()  # STOP HERE IF NOT LOGGED IN
 
 # ---------------------------
 # HANDLE BOTTOM NAV CLICKS
@@ -144,16 +171,21 @@ elif st.session_state.page == "Search":
 elif st.session_state.page == "Settings":
     st.header("⚙️ Settings")
 
-    st.subheader("👤 User / Host Profile")
-    st.write("Name: Guest User")
-    st.write("Role: Viewer")
+    st.subheader("👤 Profile")
+    st.write("Username: admin")
+    st.write("Email: admin@restnest.com")
+    st.write("Contact #: 09XXXXXXXXX")
+
+    st.subheader("📤 Post Listings")
+    st.write("Feature coming soon")
 
     st.subheader("❓ Get Help")
-    st.write("Email: support@restnest.com")
+    st.write("support@restnest.com")
 
     st.subheader("🚪 Log Out")
     if st.button("Log Out"):
-        st.session_state.loaded = False
+        st.session_state.logged_in = False
+        st.session_state.page = "Home"
         st.rerun()
 
 # ---------------------------
