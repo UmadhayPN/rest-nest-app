@@ -8,7 +8,7 @@ import time
 st.set_page_config(page_title="Rest Nest", layout="wide")
 
 # ---------------------------
-# CUSTOM CSS
+# CSS (ANDROID-STYLE NAV)
 # ---------------------------
 st.markdown("""
 <style>
@@ -17,22 +17,39 @@ body {
     color: black;
 }
 
-/* Fixed bottom navigation */
-.nav-container {
+/* Bottom navigation container */
+.bottom-nav {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: white;
-    padding: 10px 0;
+    height: 65px;
+    background-color: #ffffff;
     border-top: 1px solid #ccc;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
     z-index: 999;
+}
+
+/* Make Streamlit buttons look like nav buttons */
+.bottom-nav button {
+    background: none !important;
+    border: none !important;
+    font-size: 16px !important;
+    color: black !important;
+    font-weight: 500;
+}
+
+/* Remove Streamlit button padding */
+div.stButton > button {
+    padding: 0.5rem 1rem;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# LOAD DATASET
+# LOAD DATA
 # ---------------------------
 @st.cache_data
 def load_data():
@@ -41,7 +58,7 @@ def load_data():
 data = load_data()
 
 # ---------------------------
-# SESSION STATE INIT
+# SESSION STATES
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
@@ -65,7 +82,7 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# LOGIN SCREEN (NO NAV HERE)
+# LOGIN SCREEN (NO NAV)
 # ---------------------------
 if not st.session_state.logged_in:
     st.markdown("<h2 style='text-align:center;'>Login</h2>", unsafe_allow_html=True)
@@ -78,22 +95,20 @@ if not st.session_state.logged_in:
             st.session_state.logged_in = True
             st.rerun()
         else:
-            st.error("Invalid username or password")
+            st.error("Invalid credentials")
 
-    # STOP APP HERE (NO NAV BAR)
     st.stop()
 
 # ---------------------------
-# MAIN CONTENT (AFTER LOGIN)
+# MAIN CONTENT
 # ---------------------------
 if st.session_state.page == "Home":
     st.header("🏠 Recommended Houses")
 
     for _, row in data.iterrows():
         st.subheader(row["name"])
-        st.write(f"📍 Location: {row['location']}")
-        st.write(f"🏷 Type: {row['type']}")
-        st.write(f"💰 Price: ₱{row['price']:,}")
+        st.write(f"📍 {row['location']}")
+        st.write(f"🏷 {row['type']} | ₱{row['price']:,}")
         st.markdown("---")
 
 elif st.session_state.page == "Search":
@@ -113,7 +128,6 @@ elif st.session_state.page == "Search":
 
     if location != "All":
         filtered = filtered[filtered["location"] == location]
-
     if house_type != "All":
         filtered = filtered[filtered["type"] == house_type]
 
@@ -121,8 +135,6 @@ elif st.session_state.page == "Search":
         (filtered["price"] >= price_range[0]) &
         (filtered["price"] <= price_range[1])
     ]
-
-    st.write(f"### {len(filtered)} results found")
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
@@ -136,36 +148,33 @@ elif st.session_state.page == "Settings":
     st.write("Username: admin")
     st.write("Email: admin@restnest.com")
 
-    st.subheader("❓ Get Help")
-    st.write("support@restnest.com")
-
     if st.button("🚪 Log Out"):
         st.session_state.logged_in = False
         st.session_state.page = "Home"
         st.rerun()
 
 # ---------------------------
-# SPACE SO CONTENT IS NOT COVERED
+# CONTENT SPACER
 # ---------------------------
-st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# FIXED BOTTOM NAV (ONLY AFTER LOGIN)
+# ANDROID-STYLE BOTTOM NAV
 # ---------------------------
-st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+st.markdown('<div class="bottom-nav">', unsafe_allow_html=True)
 
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🏠 Home"):
+    if st.button("🏠\nHome"):
         st.session_state.page = "Home"
 
 with col2:
-    if st.button("🔍 Search"):
+    if st.button("🔍\nSearch"):
         st.session_state.page = "Search"
 
 with col3:
-    if st.button("⚙️ Settings"):
+    if st.button("⚙️\nSettings"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
