@@ -153,7 +153,7 @@ if not st.session_state.loaded:
 # TOP LOGO (IMAGE)
 # ---------------------------
 st.markdown('<div class="logo-frame"><div class="logo-card">', unsafe_allow_html=True)
-st.image("assets/rest_quest_logo.png", width=200)
+st.image("image-removebg-preview.png", width=200)
 st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ---------------------------
@@ -246,3 +246,4 @@ with n3:
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
+
