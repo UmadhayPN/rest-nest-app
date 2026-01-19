@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import time
-from PIL import Image
 
 # ---------------------------
 # PAGE CONFIG
@@ -14,9 +13,9 @@ st.set_page_config(page_title="Rest Quest", layout="wide")
 st.markdown("""
 <style>
 body {
-    background-color: #f7f7f2;
+    background-color: #fefcf4;
     color: #0b3d0b;
-    font-family: sans-serif;
+    font-family: 'Segoe UI', sans-serif;
 }
 
 /* ---------- TOP LOGO ---------- */
@@ -24,24 +23,28 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 10px 0 20px 0;
+    margin: 15px 0 25px 0;
 }
 .logo-container img {
     width: 50px;
     margin-right: 15px;
 }
+.logo-container h2 {
+    color: #0b3d0b;
+    font-weight: bold;
+    margin: 0;
+}
 
 /* ---------- LOADING SCREEN ---------- */
 .loader-container {
     height: 100vh;
-    background: linear-gradient(#e8efe8, #f7f7f2);
+    background: linear-gradient(#e8efe8, #fefcf4);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     overflow: hidden;
 }
-
 .walker {
     width: 40px;
     height: 80px;
@@ -50,7 +53,6 @@ body {
     position: relative;
     animation: walk 1s infinite alternate;
 }
-
 .walker::before {
     content: '';
     width: 12px;
@@ -61,11 +63,7 @@ body {
     top: -18px;
     left: 11px;
 }
-
-@keyframes walk {
-    0% { transform: translateX(-25px); }
-    100% { transform: translateX(25px); }
-}
+@keyframes walk { 0% { transform: translateX(-25px); } 100% { transform: translateX(25px); } }
 
 .leaf {
     position: absolute;
@@ -75,10 +73,20 @@ body {
     opacity: 0.3;
     animation: fall 6s linear infinite;
 }
+@keyframes fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
 
-@keyframes fall {
-    0% { transform: translateY(-100px); }
-    100% { transform: translateY(100vh); }
+/* ---------- FILTER BUTTONS ---------- */
+.filter-btn {
+    background-color: #0b3d0b;
+    color: #fefcf4;
+    border-radius: 8px;
+    padding: 8px 15px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+.filter-btn:hover {
+    background-color: #145214;
 }
 
 /* ---------- FIXED BOTTOM NAV ---------- */
@@ -95,16 +103,13 @@ body {
     padding: 5px 0;
     z-index: 9999;
 }
-
-/* Bottom nav buttons as images */
 .nav-container img {
     width: 40px;
     cursor: pointer;
+    transition: transform 0.2s;
 }
-
 .nav-container img:hover {
-    transform: scale(1.1);
-    transition: 0.2s;
+    transform: scale(1.2);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -115,7 +120,6 @@ body {
 @st.cache_data
 def load_data():
     return pd.read_csv("houses.csv")
-
 data = load_data()
 
 # ---------------------------
@@ -123,10 +127,8 @@ data = load_data()
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
-
 if "page" not in st.session_state:
     st.session_state.page = "Home"
-
 if "filter_type" not in st.session_state:
     st.session_state.filter_type = "All"
 
@@ -149,11 +151,11 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# TOP LOGO (Image + Text)
+# TOP LOGO
 # ---------------------------
-st.markdown("""
+st.markdown(f"""
 <div class="logo-container">
-    <img src="image-removebg-preview.png" alt="Logo">
+    <img src="logo.png" alt="Logo">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
@@ -164,10 +166,10 @@ st.markdown("""
 if st.session_state.page == "Home":
     f1, f2 = st.columns(2)
     with f1:
-        if st.button("🏠 Rent"):
+        if st.button("🏠 Rent", key="rent_btn", help="Show Rent Houses"):
             st.session_state.filter_type = "Rent"
     with f2:
-        if st.button("🏷 Sale"):
+        if st.button("🏷 Sale", key="sale_btn", help="Show Sale Houses"):
             st.session_state.filter_type = "Sale"
 
     st.markdown("---")
@@ -207,19 +209,17 @@ elif st.session_state.page == "Search":
 # ---------------------------
 elif st.session_state.page == "Settings":
     st.header("Settings")
-
     st.subheader("Get Help")
     st.markdown("""
-    📧 support@restquest.com  
-    📘 [How to Use Rest Quest](https://example.com)
-    """)
-
+📧 support@restquest.com  
+📘 [How to Use Rest Quest](https://example.com)
+""")
     st.subheader("Post Listing")
     st.markdown("""
-    📧 [Send listing via email](mailto:listings@restquest.com)  
+📧 [Send listing via email](mailto:listings@restquest.com)  
 
 **Instructions for posting a listing:**  
-[Click here to view detailed posting instructions](https://example.com/posting-instructions)
+[Click here for detailed instructions](https://example.com/posting-instructions)
 """)
 
 # ---------------------------
@@ -228,23 +228,25 @@ elif st.session_state.page == "Settings":
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION (Image Logos)
+# BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-
 col1, col2, col3 = st.columns(3)
 
+# Clickable logos using buttons
 with col1:
-    if st.image("Home.png", use_column_width=False, output_format="PNG"):
+    if st.button(" ", key="nav_home", help="Home"):
         st.session_state.page = "Home"
+    st.markdown('<img src="home.png" alt="Home">', unsafe_allow_html=True)
 
 with col2:
-    if st.image("Search.png", use_column_width=False, output_format="PNG"):
+    if st.button(" ", key="nav_search", help="Search"):
         st.session_state.page = "Search"
+    st.markdown('<img src="search.png" alt="Search">', unsafe_allow_html=True)
 
 with col3:
-    if st.image("Settiing.png", use_column_width=False, output_format="PNG"):
+    if st.button(" ", key="nav_settings", help="Settings"):
         st.session_state.page = "Settings"
+    st.markdown('<img src="settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
