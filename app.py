@@ -27,17 +27,18 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 0;
+    padding: 15px 0;
     background-color: #fefcf4;
     z-index: 9999;
 }
 .logo-container img {
-    width: 50px;
-    margin-right: 45px;
+    width: 60px;
+    margin-right: 20px;
 }
 .logo-container h2 {
     color: #0b3d0b;
     font-weight: bold;
+    font-size: 32px;
     margin: 0;
 }
 
@@ -126,27 +127,28 @@ body {
     background-color: #145214;
 }
 
-/* ---------- FIXED BOTTOM NAV ---------- */
+/* ---------- FIXED BOTTOM NAV (BIGGER) ---------- */
 .nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
+    height: 90px;           /* increased height */
     background-color: #fefcf4;
     border-top: 2px solid #0b3d0b;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 5px 0;
+    padding: 15px 0;        /* increased padding */
     z-index: 9999;
 }
 .nav-container img {
-    width: 40px;
+    width: 60px;             /* bigger logos */
     cursor: pointer;
     transition: transform 0.2s;
 }
 .nav-container img:hover {
-    transform: scale(1.2);
+    transform: scale(1.3);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -291,7 +293,6 @@ with col2:
 with col3:
     if st.button(" ", key="nav_settings"):
         st.session_state.page = "Settings"
-    st.markdown('<img src="Dettings.png" alt="Settings">', unsafe_allow_html=True)
+    st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
