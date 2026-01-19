@@ -217,9 +217,8 @@ elif st.session_state.page == "Settings":
     st.subheader("Post Listing")
     st.markdown("""
 📧 [Send listing via email](mailto:listings@restquest.com)  
-
-**Instructions for posting a listing:**  
-[Click here for detailed instructions](https://example.com/posting-instructions)
+ 
+[Instructions for posting a listing](https://example.com/posting-instructions)
 """)
 
 # ---------------------------
@@ -250,4 +249,5 @@ with col3:
     st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
