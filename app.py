@@ -14,8 +14,8 @@ st.set_page_config(page_title="Rest Quest", layout="wide")
 st.markdown("""
 <style>
 body {
-    background-color: #f7f7f2; /* off white */
-    color: #0b3d0b; /* dark green */
+    background-color: #f7f7f2;
+    color: #0b3d0b;
     font-family: sans-serif;
 }
 
@@ -88,23 +88,23 @@ body {
     left: 0;
     width: 100%;
     background-color: #ffffff;
-    padding: 10px 0;
     border-top: 2px solid #0b3d0b;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 5px 0;
     z-index: 9999;
 }
 
-/* Buttons */
-div.stButton > button {
-    width: 100%;
-    background-color: transparent;
-    color: #0b3d0b;
-    border: none;
-    font-size: 16px;
-    font-weight: bold;
+/* Bottom nav buttons as images */
+.nav-container img {
+    width: 40px;
+    cursor: pointer;
 }
 
-div.stButton > button:hover {
-    background-color: #e6f0e6;
+.nav-container img:hover {
+    transform: scale(1.1);
+    transition: 0.2s;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -153,7 +153,7 @@ if not st.session_state.loaded:
 # ---------------------------
 st.markdown("""
 <div class="logo-container">
-    <img src="image-removebg-preview.png">
+    <img src="image-removebg-preview.png" alt="Logo">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
@@ -219,15 +219,7 @@ elif st.session_state.page == "Settings":
     📧 [Send listing via email](mailto:listings@restquest.com)  
 
 **Instructions for posting a listing:**  
-- Include a detailed description  
-- Specify price range  
-- Indicate if it is for Rent or Sale  
-- Provide a clear and searchable title  
-- Category and place  
-- Size of the house  
-- Availability  
-- Condition of the house  
-- Include photos if possible
+[Click here to view detailed posting instructions](https://example.com/posting-instructions)
 """)
 
 # ---------------------------
@@ -236,23 +228,22 @@ elif st.session_state.page == "Settings":
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# FIXED BOTTOM NAVIGATION (placeholders for logos)
+# BOTTOM NAVIGATION (Image Logos)
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-n1, n2, n3 = st.columns(3)
 
-with n1:
-    if st.button("🏠 Home", key="nav_home"):
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    if st.image("home_placeholder.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Home"
 
-with n2:
-    if st.button("🔍 Search", key="nav_search"):
+with col2:
+    if st.image("search_placeholder.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Search"
 
-with n3:
-    if st.button("⚙️ Settings", key="nav_settings"):
+with col3:
+    if st.image("settings_placeholder.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
