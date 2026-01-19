@@ -8,7 +8,7 @@ import time
 st.set_page_config(page_title="Rest Nest", layout="wide")
 
 # ---------------------------
-# CUSTOM CSS (THEME + ANIMATION + BOTTOM NAV)
+# CUSTOM CSS
 # ---------------------------
 st.markdown("""
 <style>
@@ -17,12 +17,7 @@ body {
     color: #00ff00;
 }
 
-input {
-    background-color: #111 !important;
-    color: #00ff00 !important;
-}
-
-/* -------- LOADING ANIMATION -------- */
+/* ---------- LOADING ANIMATION ---------- */
 .loader-container {
     height: 100vh;
     display: flex;
@@ -32,47 +27,31 @@ input {
 }
 
 .walker {
-    width: 60px;
-    height: 120px;
+    width: 40px;
+    height: 80px;
     border: 3px solid #00ff00;
-    border-radius: 30px;
+    border-radius: 20px;
     position: relative;
     animation: walk 1s infinite alternate;
 }
 
 .walker::before {
-    content: "";
+    content: '';
     width: 12px;
-    height: 40px;
+    height: 12px;
     background: #00ff00;
+    border-radius: 50%;
     position: absolute;
-    bottom: -40px;
-    left: 12px;
-    animation: leg 0.5s infinite alternate;
-}
-
-.walker::after {
-    content: "";
-    width: 12px;
-    height: 40px;
-    background: #00ff00;
-    position: absolute;
-    bottom: -40px;
-    right: 12px;
-    animation: leg 0.5s infinite alternate-reverse;
+    top: -18px;
+    left: 11px;
 }
 
 @keyframes walk {
-    from { transform: translateX(-10px); }
-    to { transform: translateX(10px); }
+    0% { transform: translateX(-20px); }
+    100% { transform: translateX(20px); }
 }
 
-@keyframes leg {
-    from { transform: rotate(10deg); }
-    to { transform: rotate(-10deg); }
-}
-
-/* -------- BOTTOM NAV -------- */
+/* ---------- FIXED BOTTOM NAV ---------- */
 .nav-container {
     position: fixed;
     bottom: 0;
@@ -84,15 +63,16 @@ input {
     z-index: 1000;
 }
 
-.nav-container button {
-    background: none;
-    border: none;
+/* Make buttons full width */
+div.stButton > button {
+    width: 100%;
+    background-color: transparent;
     color: #00ff00;
+    border: none;
     font-size: 16px;
-    cursor: pointer;
 }
 
-.nav-container button:hover {
+div.stButton > button:hover {
     color: white;
 }
 </style>
@@ -108,7 +88,7 @@ def load_data():
 data = load_data()
 
 # ---------------------------
-# SESSION STATE
+# SESSION STATES
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
@@ -117,14 +97,14 @@ if "page" not in st.session_state:
     st.session_state.page = "Home"
 
 # ---------------------------
-# LOADING SCREEN WITH ANIMATION
+# LOADING SCREEN (WITH ANIMATION)
 # ---------------------------
 if not st.session_state.loaded:
     st.markdown("""
     <div class="loader-container">
-        <h1>Rest Nest</h1>
         <div class="walker"></div>
-        <p>Finding your perfect home...</p>
+        <h1>Rest Nest</h1>
+        <p>Finding your next home...</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -148,8 +128,15 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Search":
     st.header("🔍 Search Houses")
 
-    location = st.selectbox("Location", ["All"] + list(data["location"].unique()))
-    house_type = st.selectbox("Type", ["All", "Rent", "Sale"])
+    location = st.selectbox(
+        "Location",
+        ["All"] + list(data["location"].unique())
+    )
+
+    house_type = st.selectbox(
+        "Type",
+        ["All", "Rent", "Sale"]
+    )
 
     price_range = st.slider(
         "Price Range",
@@ -159,8 +146,10 @@ elif st.session_state.page == "Search":
     )
 
     filtered = data.copy()
+
     if location != "All":
         filtered = filtered[filtered["location"] == location]
+
     if house_type != "All":
         filtered = filtered[filtered["type"] == house_type]
 
@@ -170,6 +159,7 @@ elif st.session_state.page == "Search":
     ]
 
     st.write(f"### {len(filtered)} results found")
+
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
         st.write(f"{row['location']} | {row['type']} | ₱{row['price']:,}")
@@ -178,20 +168,19 @@ elif st.session_state.page == "Search":
 elif st.session_state.page == "Settings":
     st.header("⚙️ Settings")
 
-    st.subheader("👤 Profile")
-    st.write("Username: Guest")
-    st.write("Email: guest@restnest.com")
+    st.subheader("👤 User Profile")
+    st.write("Guest User")
 
     st.subheader("❓ Get Help")
     st.write("support@restnest.com")
 
 # ---------------------------
-# SPACE FOR FIXED NAV
+# SPACE SO CONTENT IS NOT COVERED
 # ---------------------------
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION
+# FIXED BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 
