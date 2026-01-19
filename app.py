@@ -8,7 +8,7 @@ import time
 st.set_page_config(page_title="Rest Nest", layout="wide")
 
 # ---------------------------
-# CUSTOM CSS
+# CUSTOM CSS (THEME + ANIMATION + BOTTOM NAV)
 # ---------------------------
 st.markdown("""
 <style>
@@ -22,7 +22,57 @@ input {
     color: #00ff00 !important;
 }
 
-/* Fixed bottom navigation bar */
+/* -------- LOADING ANIMATION -------- */
+.loader-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.walker {
+    width: 60px;
+    height: 120px;
+    border: 3px solid #00ff00;
+    border-radius: 30px;
+    position: relative;
+    animation: walk 1s infinite alternate;
+}
+
+.walker::before {
+    content: "";
+    width: 12px;
+    height: 40px;
+    background: #00ff00;
+    position: absolute;
+    bottom: -40px;
+    left: 12px;
+    animation: leg 0.5s infinite alternate;
+}
+
+.walker::after {
+    content: "";
+    width: 12px;
+    height: 40px;
+    background: #00ff00;
+    position: absolute;
+    bottom: -40px;
+    right: 12px;
+    animation: leg 0.5s infinite alternate-reverse;
+}
+
+@keyframes walk {
+    from { transform: translateX(-10px); }
+    to { transform: translateX(10px); }
+}
+
+@keyframes leg {
+    from { transform: rotate(10deg); }
+    to { transform: rotate(-10deg); }
+}
+
+/* -------- BOTTOM NAV -------- */
 .nav-container {
     position: fixed;
     bottom: 0;
@@ -32,6 +82,18 @@ input {
     padding: 10px 0;
     border-top: 1px solid #333;
     z-index: 1000;
+}
+
+.nav-container button {
+    background: none;
+    border: none;
+    color: #00ff00;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.nav-container button:hover {
+    color: white;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -46,46 +108,29 @@ def load_data():
 data = load_data()
 
 # ---------------------------
-# SESSION STATES
+# SESSION STATE
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
-
-if "logged_in" not in st.session_state:
-    st.session_state.logged_in = False
 
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
 # ---------------------------
-# LOADING SCREEN
+# LOADING SCREEN WITH ANIMATION
 # ---------------------------
 if not st.session_state.loaded:
-    st.markdown(
-        "<h1 style='text-align:center; margin-top:200px;'>Rest Nest</h1>",
-        unsafe_allow_html=True
-    )
-    time.sleep(2)
+    st.markdown("""
+    <div class="loader-container">
+        <h1>Rest Nest</h1>
+        <div class="walker"></div>
+        <p>Finding your perfect home...</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+    time.sleep(3)
     st.session_state.loaded = True
     st.rerun()
-
-# ---------------------------
-# LOGIN SCREEN
-# ---------------------------
-if not st.session_state.logged_in:
-    st.markdown("<h2 style='text-align:center;'>Login</h2>", unsafe_allow_html=True)
-
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
-
-    if st.button("Log In"):
-        if username == "admin" and password == "1234":
-            st.session_state.logged_in = True
-            st.rerun()
-        else:
-            st.error("Invalid username or password")
-
-    st.stop()  # IMPORTANT: stop app here if not logged in
 
 # ---------------------------
 # MAIN CONTENT
@@ -103,15 +148,8 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Search":
     st.header("🔍 Search Houses")
 
-    location = st.selectbox(
-        "Location",
-        ["All"] + list(data["location"].unique())
-    )
-
-    house_type = st.selectbox(
-        "Type",
-        ["All", "Rent", "Sale"]
-    )
+    location = st.selectbox("Location", ["All"] + list(data["location"].unique()))
+    house_type = st.selectbox("Type", ["All", "Rent", "Sale"])
 
     price_range = st.slider(
         "Price Range",
@@ -121,10 +159,8 @@ elif st.session_state.page == "Search":
     )
 
     filtered = data.copy()
-
     if location != "All":
         filtered = filtered[filtered["location"] == location]
-
     if house_type != "All":
         filtered = filtered[filtered["type"] == house_type]
 
@@ -134,7 +170,6 @@ elif st.session_state.page == "Search":
     ]
 
     st.write(f"### {len(filtered)} results found")
-
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
         st.write(f"{row['location']} | {row['type']} | ₱{row['price']:,}")
@@ -144,40 +179,34 @@ elif st.session_state.page == "Settings":
     st.header("⚙️ Settings")
 
     st.subheader("👤 Profile")
-    st.write("Username: admin")
-    st.write("Email: admin@restnest.com")
-    st.write("Contact #: 09XXXXXXXXX")
+    st.write("Username: Guest")
+    st.write("Email: guest@restnest.com")
 
     st.subheader("❓ Get Help")
     st.write("support@restnest.com")
 
-    st.subheader("🚪 Log Out")
-    if st.button("Log Out"):
-        st.session_state.logged_in = False
-        st.session_state.page = "Home"
-        st.rerun()
-
 # ---------------------------
-# SPACE FOR BOTTOM NAV
+# SPACE FOR FIXED NAV
 # ---------------------------
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION (STREAMLIT BUTTONS)
+# BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
+
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.button("🏠 Home", key="home_btn"):
+    if st.button("🏠 Home", key="nav_home"):
         st.session_state.page = "Home"
 
 with col2:
-    if st.button("🔍 Search", key="search_btn"):
+    if st.button("🔍 Search", key="nav_search"):
         st.session_state.page = "Search"
 
 with col3:
-    if st.button("⚙️ Settings", key="settings_btn"):
+    if st.button("⚙️ Settings", key="nav_settings"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
