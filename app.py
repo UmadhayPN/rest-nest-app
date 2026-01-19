@@ -109,8 +109,13 @@ body {
     background: #6b8f71;
     opacity: 0.3;
     border-radius:50%;
-    animation: fall 6s linear infinite;
+    animation: fall linear infinite;
 }
+.leaf:nth-child(1) { animation-duration: 6s; animation-delay: 0s; left: 10%; }
+.leaf:nth-child(2) { animation-duration: 8s; animation-delay: 1s; left: 30%; }
+.leaf:nth-child(3) { animation-duration: 7s; animation-delay: 0.5s; left: 50%; }
+.leaf:nth-child(4) { animation-duration: 5s; animation-delay: 1.5s; left: 70%; }
+.leaf:nth-child(5) { animation-duration: 9s; animation-delay: 0.8s; left: 85%; }
 @keyframes fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
 
 /* ---------- FILTER BUTTONS ---------- */
@@ -128,7 +133,7 @@ body {
     background-color: #145214;
 }
 
-/* ---------- BOTTOM NAVIGATION (Sticky) ---------- */
+/* ---------- BOTTOM NAVIGATION (Sticky & Centered) ---------- */
 .nav-container {
     position: sticky;
     bottom: 0;
@@ -137,7 +142,7 @@ body {
     background-color: #fefcf4;
     border-top: 2px solid #0b3d0b;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     padding: 10px 0;
     z-index: 9999;
@@ -145,6 +150,7 @@ body {
 .nav-container img {
     width: 50px;
     cursor: pointer;
+    margin: 0 20px;
     transition: transform 0.2s;
 }
 .nav-container img:hover {
@@ -177,7 +183,7 @@ if "price_range" not in st.session_state:
 # LOADING SCREEN
 # ---------------------------
 if not st.session_state.loaded:
-    st.markdown(f"""
+    st.markdown("""
     <div class="loader-container">
         <h1>Rest Quest</h1>
         <div class="walker"></div>
@@ -188,10 +194,11 @@ if not st.session_state.loaded:
             <div class="tree"></div>
             <div class="building"></div>
         </div>
-        <div class="leaf" style="left:10%;"></div>
-        <div class="leaf" style="left:35%;"></div>
-        <div class="leaf" style="left:60%;"></div>
-        <div class="leaf" style="left:80%;"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
+        <div class="leaf"></div>
     </div>
     """, unsafe_allow_html=True)
     time.sleep(3)
@@ -208,10 +215,11 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
+st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under header
+
 # ---------------------------
 # HOME PAGE
 # ---------------------------
-st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under sticky header
 if st.session_state.page == "Home":
     cols = st.columns([1,1,1])
     with cols[0]:
@@ -243,14 +251,44 @@ if st.session_state.page == "Home":
 elif st.session_state.page == "Search":
     st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.header("Search Houses")
+
+    # Rent/Sale/All buttons
+    cols = st.columns([1,1,1])
+    with cols[0]:
+        if st.button("All", key="search_all_btn"):
+            st.session_state.filter_type = "All"
+    with cols[1]:
+        if st.button("🏠 Rent", key="search_rent_btn"):
+            st.session_state.filter_type = "Rent"
+    with cols[2]:
+        if st.button("🏷 Sale", key="search_sale_btn"):
+            st.session_state.filter_type = "Sale"
+
+    # Price range slider
+    min_price = int(data['price'].min())
+    max_price = int(data['price'].max())
+    st.session_state.price_range = st.slider(
+        "Price Range (₱)",
+        min_value=min_price,
+        max_value=max_price,
+        value=st.session_state.price_range,
+        step=1000
+    )
+
     search_query = st.text_input("Search by name or location")
-    
     filtered = data.copy()
     if search_query:
         filtered = filtered[
             filtered["name"].str.contains(search_query, case=False) |
             filtered["location"].str.contains(search_query, case=False)
         ]
+    if st.session_state.filter_type != "All":
+        filtered = filtered[filtered["type"] == st.session_state.filter_type]
+
+    filtered = filtered[
+        (filtered['price'] >= st.session_state.price_range[0]) &
+        (filtered['price'] <= st.session_state.price_range[1])
+    ]
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
