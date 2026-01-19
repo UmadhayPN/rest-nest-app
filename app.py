@@ -14,21 +14,21 @@ st.set_page_config(page_title="Rest Quest", layout="wide")
 st.markdown("""
 <style>
 body {
-    background-color: #f7f7f2;
-    color: #0b3d0b;
+    background-color: #f7f7f2; /* off white */
+    color: #0b3d0b; /* dark green */
+    font-family: sans-serif;
 }
 
-/* ---------- LOGO FRAME ---------- */
-.logo-frame {
+/* ---------- TOP LOGO ---------- */
+.logo-container {
     display: flex;
+    align-items: center;
     justify-content: center;
-    margin: 15px 0;
+    margin: 10px 0 20px 0;
 }
-.logo-card {
-    padding: 15px 25px;
-    border-radius: 14px;
-    border: 2px solid #0b3d0b;
-    background-color: white;
+.logo-container img {
+    width: 50px;
+    margin-right: 15px;
 }
 
 /* ---------- LOADING SCREEN ---------- */
@@ -67,7 +67,6 @@ body {
     100% { transform: translateX(25px); }
 }
 
-/* ---------- FALLING LEAVES ---------- */
 .leaf {
     position: absolute;
     width: 10px;
@@ -82,18 +81,19 @@ body {
     100% { transform: translateY(100vh); }
 }
 
-/* ---------- BOTTOM NAV ---------- */
+/* ---------- FIXED BOTTOM NAV ---------- */
 .nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: white;
+    background-color: #ffffff;
     padding: 10px 0;
     border-top: 2px solid #0b3d0b;
-    z-index: 1000;
+    z-index: 9999;
 }
 
+/* Buttons */
 div.stButton > button {
     width: 100%;
     background-color: transparent;
@@ -144,30 +144,28 @@ if not st.session_state.loaded:
         <div class="leaf" style="left:75%"></div>
     </div>
     """, unsafe_allow_html=True)
-
     time.sleep(3)
     st.session_state.loaded = True
     st.rerun()
 
 # ---------------------------
-# TOP LOGO (IMAGE)
+# TOP LOGO (Image + Text)
 # ---------------------------
-st.markdown('<div class="logo-frame"><div class="logo-card">', unsafe_allow_html=True)
-st.image("image-removebg-preview.png", width=200)
-st.markdown('</div></div>', unsafe_allow_html=True)
+st.markdown("""
+<div class="logo-container">
+    <img src="image-removebg-preview.png" alt="Logo">
+    <h2>Rest Quest</h2>
+</div>
+""", unsafe_allow_html=True)
 
 # ---------------------------
 # HOME PAGE
 # ---------------------------
 if st.session_state.page == "Home":
-
-    st.markdown("### Filter Listings")
     f1, f2 = st.columns(2)
-
     with f1:
         if st.button("🏠 Rent"):
             st.session_state.filter_type = "Rent"
-
     with f2:
         if st.button("🏷 Sale"):
             st.session_state.filter_type = "Sale"
@@ -190,7 +188,6 @@ if st.session_state.page == "Home":
 # ---------------------------
 elif st.session_state.page == "Search":
     st.header("Search Houses")
-
     search_query = st.text_input("Search by name or location")
 
     filtered = data.copy()
@@ -219,8 +216,19 @@ elif st.session_state.page == "Settings":
 
     st.subheader("Post Listing")
     st.markdown("""
-    📧 [Send listing via email](mailto:listings@restquest.com)
-    """)
+    📧 [Send listing via email](mailto:listings@restquest.com)  
+
+**Instructions for posting a listing:**  
+- Include a detailed description  
+- Specify price range  
+- Indicate if it is for Rent or Sale  
+- Provide a clear and searchable title  
+- Category and place  
+- Size of the house  
+- Availability  
+- Condition of the house  
+- Include photos if possible
+""")
 
 # ---------------------------
 # SPACE FOR NAV BAR
@@ -228,7 +236,7 @@ elif st.session_state.page == "Settings":
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION
+# FIXED BOTTOM NAVIGATION (placeholders for logos)
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 n1, n2, n3 = st.columns(3)
@@ -246,4 +254,3 @@ with n3:
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
-
