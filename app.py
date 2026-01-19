@@ -155,7 +155,7 @@ if not st.session_state.loaded:
 # ---------------------------
 st.markdown(f"""
 <div class="logo-container">
-    <img src="logo.png" alt="Logo">
+    <img src="image-removebg-preview.png" alt="Logo">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
@@ -237,16 +237,17 @@ col1, col2, col3 = st.columns(3)
 with col1:
     if st.button(" ", key="nav_home", help="Home"):
         st.session_state.page = "Home"
-    st.markdown('<img src="home.png" alt="Home">', unsafe_allow_html=True)
+    st.markdown('<img src="Home.png" alt="Home">', unsafe_allow_html=True)
 
 with col2:
     if st.button(" ", key="nav_search", help="Search"):
         st.session_state.page = "Search"
-    st.markdown('<img src="search.png" alt="Search">', unsafe_allow_html=True)
+    st.markdown('<img src="Search.png" alt="Search">', unsafe_allow_html=True)
 
 with col3:
     if st.button(" ", key="nav_settings", help="Settings"):
         st.session_state.page = "Settings"
-    st.markdown('<img src="settings.png" alt="Settings">', unsafe_allow_html=True)
+    st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
