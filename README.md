@@ -1,4 +1,4 @@
-# Rest Nest 🏡
+# Rest Quest 🏡
 
 A Streamlit web application for recommending houses for rent and sale.
 
