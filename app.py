@@ -153,7 +153,7 @@ if not st.session_state.loaded:
 # ---------------------------
 st.markdown("""
 <div class="logo-container">
-    <img src="image-removebg-preview.png" alt="crazy">
+    <img src="image-removebg-preview.png">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
@@ -254,4 +254,5 @@ with n3:
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
