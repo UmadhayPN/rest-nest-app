@@ -1,11 +1,12 @@
 import streamlit as st
 import pandas as pd
 import time
+from PIL import Image
 
 # ---------------------------
 # PAGE CONFIG
 # ---------------------------
-st.set_page_config(page_title="Rest Nest", layout="wide")
+st.set_page_config(page_title="Rest Quest", layout="wide")
 
 # ---------------------------
 # CUSTOM CSS
@@ -13,22 +14,27 @@ st.set_page_config(page_title="Rest Nest", layout="wide")
 st.markdown("""
 <style>
 body {
-    background-color: black;
-    color: #00ff00;
+    background-color: #f7f7f2;
+    color: #0b3d0b;
 }
 
-/* ---------- TOP LOGO ---------- */
-.logo {
-    font-size: 28px;
-    font-weight: bold;
-    text-align: center;
-    margin-bottom: 20px;
+/* ---------- LOGO FRAME ---------- */
+.logo-frame {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+}
+.logo-card {
+    padding: 15px 25px;
+    border-radius: 14px;
+    border: 2px solid #0b3d0b;
+    background-color: white;
 }
 
 /* ---------- LOADING SCREEN ---------- */
 .loader-container {
     height: 100vh;
-    background: radial-gradient(circle, #0a1a0a, #000);
+    background: linear-gradient(#e8efe8, #f7f7f2);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -39,7 +45,7 @@ body {
 .walker {
     width: 40px;
     height: 80px;
-    border: 3px solid #00ff00;
+    border: 3px solid #0b3d0b;
     border-radius: 20px;
     position: relative;
     animation: walk 1s infinite alternate;
@@ -49,7 +55,7 @@ body {
     content: '';
     width: 12px;
     height: 12px;
-    background: #00ff00;
+    background: #0b3d0b;
     border-radius: 50%;
     position: absolute;
     top: -18px;
@@ -57,8 +63,8 @@ body {
 }
 
 @keyframes walk {
-    0% { transform: translateX(-20px); }
-    100% { transform: translateX(20px); }
+    0% { transform: translateX(-25px); }
+    100% { transform: translateX(25px); }
 }
 
 /* ---------- FALLING LEAVES ---------- */
@@ -66,9 +72,9 @@ body {
     position: absolute;
     width: 10px;
     height: 10px;
-    background: #00ff00;
+    background: #6b8f71;
     opacity: 0.3;
-    animation: fall 5s linear infinite;
+    animation: fall 6s linear infinite;
 }
 
 @keyframes fall {
@@ -76,29 +82,29 @@ body {
     100% { transform: translateY(100vh); }
 }
 
-/* ---------- FIXED BOTTOM NAV ---------- */
+/* ---------- BOTTOM NAV ---------- */
 .nav-container {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #111;
+    background-color: white;
     padding: 10px 0;
-    border-top: 1px solid #333;
+    border-top: 2px solid #0b3d0b;
     z-index: 1000;
 }
 
-/* Buttons */
 div.stButton > button {
     width: 100%;
     background-color: transparent;
-    color: #00ff00;
+    color: #0b3d0b;
     border: none;
     font-size: 16px;
+    font-weight: bold;
 }
 
 div.stButton > button:hover {
-    color: white;
+    background-color: #e6f0e6;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -131,11 +137,11 @@ if not st.session_state.loaded:
     st.markdown("""
     <div class="loader-container">
         <div class="walker"></div>
-        <h1>Rest Nest</h1>
+        <h1>Rest Quest</h1>
         <p>Finding your next home...</p>
-        <div class="leaf" style="left:10%"></div>
-        <div class="leaf" style="left:40%"></div>
-        <div class="leaf" style="left:70%"></div>
+        <div class="leaf" style="left:15%"></div>
+        <div class="leaf" style="left:45%"></div>
+        <div class="leaf" style="left:75%"></div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -144,28 +150,30 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# TOP LOGO
+# TOP LOGO (IMAGE)
 # ---------------------------
-st.markdown('<div class="logo">🏡 Rest Nest</div>', unsafe_allow_html=True)
+st.markdown('<div class="logo-frame"><div class="logo-card">', unsafe_allow_html=True)
+st.image("assets/rest_quest_logo.png", width=200)
+st.markdown('</div></div>', unsafe_allow_html=True)
 
 # ---------------------------
 # HOME PAGE
 # ---------------------------
 if st.session_state.page == "Home":
-    col1, col2, col3 = st.columns(3)
 
-    with col1:
-        if st.button("All"):
-            st.session_state.filter_type = "All"
-    with col2:
-        if st.button("Rent"):
+    st.markdown("### Filter Listings")
+    f1, f2 = st.columns(2)
+
+    with f1:
+        if st.button("🏠 Rent"):
             st.session_state.filter_type = "Rent"
-    with col3:
-        if st.button("Sale"):
+
+    with f2:
+        if st.button("🏷 Sale"):
             st.session_state.filter_type = "Sale"
 
     st.markdown("---")
-    st.header("🏠 Recommended Houses")
+    st.header("Recommended Houses")
 
     filtered = data.copy()
     if st.session_state.filter_type != "All":
@@ -174,44 +182,23 @@ if st.session_state.page == "Home":
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
         st.write(f"📍 {row['location']}")
-        st.write(f"🏷 {row['type']} | 💰 ₱{row['price']:,}")
+        st.write(f"💰 ₱{row['price']:,}")
         st.markdown("---")
 
 # ---------------------------
 # SEARCH PAGE
 # ---------------------------
 elif st.session_state.page == "Search":
-    st.header("🔍 Search Houses")
+    st.header("Search Houses")
 
     search_query = st.text_input("Search by name or location")
 
-    location = st.selectbox(
-        "Location",
-        ["All"] + list(data["location"].unique())
-    )
-
-    price_range = st.slider(
-        "Price Range",
-        int(data["price"].min()),
-        int(data["price"].max()),
-        (int(data["price"].min()), int(data["price"].max()))
-    )
-
     filtered = data.copy()
-
     if search_query:
         filtered = filtered[
             filtered["name"].str.contains(search_query, case=False) |
             filtered["location"].str.contains(search_query, case=False)
         ]
-
-    if location != "All":
-        filtered = filtered[filtered["location"] == location]
-
-    filtered = filtered[
-        (filtered["price"] >= price_range[0]) &
-        (filtered["price"] <= price_range[1])
-    ]
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
@@ -222,21 +209,17 @@ elif st.session_state.page == "Search":
 # SETTINGS PAGE
 # ---------------------------
 elif st.session_state.page == "Settings":
-    st.header("⚙️ Settings")
+    st.header("Settings")
 
-    st.subheader("👤 User Profile")
-    st.write("Guest User")
-
-    st.subheader("❓ Get Help")
+    st.subheader("Get Help")
     st.markdown("""
-    📧 Email: support@restnest.com  
-    📘 [How to Use Rest Nest](https://example.com/instructions)
+    📧 support@restquest.com  
+    📘 [How to Use Rest Quest](https://example.com)
     """)
 
-    st.subheader("📢 Post Listing")
+    st.subheader("Post Listing")
     st.markdown("""
-    Want to post a house for rent or sale?  
-    📧 [Send listing via email](mailto:listings@restnest.com)
+    📧 [Send listing via email](mailto:listings@restquest.com)
     """)
 
 # ---------------------------
@@ -248,17 +231,17 @@ st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 # BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-c1, c2, c3 = st.columns(3)
+n1, n2, n3 = st.columns(3)
 
-with c1:
+with n1:
     if st.button("🏠 Home", key="nav_home"):
         st.session_state.page = "Home"
 
-with c2:
+with n2:
     if st.button("🔍 Search", key="nav_search"):
         st.session_state.page = "Search"
 
-with c3:
+with n3:
     if st.button("⚙️ Settings", key="nav_settings"):
         st.session_state.page = "Settings"
 
