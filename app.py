@@ -19,7 +19,7 @@ body {
     margin: 0;
 }
 
-/* ---------- FIXED TOP LOGO ---------- */
+/* ---------- TOP LOGO ---------- */
 .logo-container {
     position: fixed;
     top: 0;
@@ -27,11 +27,9 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0;
     padding: 10px 0;
     background-color: #fefcf4;
     z-index: 9999;
-    border-bottom: 2px solid #0b3d0b;
 }
 .logo-container img {
     width: 50px;
@@ -40,19 +38,27 @@ body {
 .logo-container h2 {
     color: #0b3d0b;
     font-weight: bold;
-    font-size: 36px;
     margin: 0;
 }
 
 /* ---------- LOADING SCREEN ---------- */
 .loader-container {
-    height: 100vh;
+    position: fixed;
+    top:0; left:0;
+    width:100%;
+    height:100vh;
     background: linear-gradient(#e8efe8, #fefcf4);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
+    z-index:10000;
+}
+.loader-container h1 {
+    color: #0b3d0b;
+    font-size: 64px;
+    text-align: center;
+    margin-bottom:50px;
 }
 .walker {
     width: 40px;
@@ -74,39 +80,33 @@ body {
 }
 @keyframes walk { 0% { transform: translateX(-25px); } 100% { transform: translateX(25px); } }
 
-/* ---------- CITY BUILDINGS AND TREES ---------- */
 .cityscape {
-    position: relative;
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    width: 100%;
-    height: 100px;
-    margin-top: 20px;
+    margin-top:50px;
 }
 .building {
-    width: 40px;
-    height: 80px;
-    background: #0b3d0b;
+    width: 30px;
+    height: 60px;
+    background-color: #0b3d0b;
     margin: 0 5px;
-    border-radius: 2px;
 }
 .tree {
-    width: 25px;
-    height: 50px;
-    background: #145214;
+    width: 20px;
+    height: 40px;
+    background-color: #145214;
     margin: 0 5px;
-    border-radius: 5px;
+    border-radius: 4px;
 }
 
-/* ---------- FALLING LEAVES ---------- */
 .leaf {
     position: absolute;
     width: 10px;
     height: 10px;
     background: #6b8f71;
     opacity: 0.3;
-    border-radius: 50%;
+    border-radius:50%;
     animation: fall 6s linear infinite;
 }
 @keyframes fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
@@ -120,6 +120,7 @@ body {
     border: none;
     font-weight: bold;
     cursor: pointer;
+    margin-right:5px;
 }
 .filter-btn:hover {
     background-color: #145214;
@@ -131,7 +132,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: #ffffff;
+    background-color: #fefcf4;
     border-top: 2px solid #0b3d0b;
     display: flex;
     justify-content: space-around;
@@ -139,27 +140,13 @@ body {
     padding: 5px 0;
     z-index: 9999;
 }
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-weight: bold;
-    color: #0b3d0b;
-    cursor: pointer;
-}
-.nav-item img {
+.nav-container img {
     width: 40px;
-    margin-bottom: 5px;
+    cursor: pointer;
     transition: transform 0.2s;
 }
-.nav-item:hover img {
+.nav-container img:hover {
     transform: scale(1.2);
-}
-
-/* ---------- CONTENT MARGIN FOR FIXED HEADER/FOOTER ---------- */
-.content {
-    padding-top: 120px; /* height of top logo */
-    padding-bottom: 80px; /* height of bottom nav */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -181,17 +168,18 @@ if "page" not in st.session_state:
     st.session_state.page = "Home"
 if "filter_type" not in st.session_state:
     st.session_state.filter_type = "All"
+if "price_range" not in st.session_state:
+    st.session_state.price_range = (data['price'].min(), data['price'].max())
 
 # ---------------------------
 # LOADING SCREEN
 # ---------------------------
 if not st.session_state.loaded:
-    st.markdown("""
+    st.markdown(f"""
     <div class="loader-container">
-        <h1 style="color:#0b3d0b; font-size:48px;">Rest Quest</h1>
+        <h1>Rest Quest</h1>
         <div class="walker"></div>
         <div class="cityscape">
-            <div class="building"></div>
             <div class="building"></div>
             <div class="tree"></div>
             <div class="building"></div>
@@ -213,25 +201,26 @@ if not st.session_state.loaded:
 # ---------------------------
 st.markdown("""
 <div class="logo-container">
-    <img src="logo.png" alt="Logo">
+    <img src="image-removebg-preview.png" alt="Logo">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# PAGE CONTENT
-# ---------------------------
-st.markdown('<div class="content">', unsafe_allow_html=True)
-
 # HOME PAGE
+# ---------------------------
+st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under fixed header
 if st.session_state.page == "Home":
-    col_all, col_rent, col_sale = st.columns(3)
-    with col_all:
-        if st.button("All", key="all_btn"): st.session_state.filter_type = "All"
-    with col_rent:
-        if st.button("🏠 Rent", key="rent_btn"): st.session_state.filter_type = "Rent"
-    with col_sale:
-        if st.button("🏷 Sale", key="sale_btn"): st.session_state.filter_type = "Sale"
+    cols = st.columns([1,1,1])
+    with cols[0]:
+        if st.button("All", key="all_btn", help="All houses"):
+            st.session_state.filter_type = "All"
+    with cols[1]:
+        if st.button("🏠 Rent", key="rent_btn", help="Show Rent Houses"):
+            st.session_state.filter_type = "Rent"
+    with cols[2]:
+        if st.button("🏷 Sale", key="sale_btn", help="Show Sale Houses"):
+            st.session_state.filter_type = "Sale"
 
     st.markdown("---")
     st.header("Recommended Houses")
@@ -242,33 +231,35 @@ if st.session_state.page == "Home":
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
-        st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
+        st.write(f"📍 {row['location']}")
+        st.write(f"💰 ₱{row['price']:,}")
         st.markdown("---")
 
+# ---------------------------
 # SEARCH PAGE
+# ---------------------------
 elif st.session_state.page == "Search":
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.header("Search Houses")
     search_query = st.text_input("Search by name or location")
-    location_filter = st.selectbox("Filter by Location", ["All"] + list(data["location"].unique()))
-    price_filter = st.slider("Price Range", int(data["price"].min()), int(data["price"].max()), (int(data["price"].min()), int(data["price"].max())))
-
+    
     filtered = data.copy()
     if search_query:
         filtered = filtered[
             filtered["name"].str.contains(search_query, case=False) |
             filtered["location"].str.contains(search_query, case=False)
         ]
-    if location_filter != "All":
-        filtered = filtered[filtered["location"] == location_filter]
-    filtered = filtered[(filtered["price"] >= price_filter[0]) & (filtered["price"] <= price_filter[1])]
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
         st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
         st.markdown("---")
 
+# ---------------------------
 # SETTINGS PAGE
+# ---------------------------
 elif st.session_state.page == "Settings":
+    st.markdown("<br><br><br>", unsafe_allow_html=True)
     st.header("Settings")
     st.subheader("Get Help")
     st.markdown("""
@@ -281,24 +272,25 @@ elif st.session_state.page == "Settings":
 [Instructions for posting a listing](https://example.com/posting-instructions)
 """)
 
-st.markdown('</div>', unsafe_allow_html=True)
-
 # ---------------------------
 # BOTTOM NAVIGATION
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-nav_col1, nav_col2, nav_col3 = st.columns(3)
+col1, col2, col3 = st.columns(3)
 
-with nav_col1:
-    if st.button("Home", key="nav_home"): st.session_state.page="Home"
-    st.markdown('<div class="nav-item"><img src="home.png"><span>Home</span></div>', unsafe_allow_html=True)
+with col1:
+    if st.button(" ", key="nav_home"):
+        st.session_state.page = "Home"
+    st.markdown('<img src="Home.png" alt="Home">', unsafe_allow_html=True)
 
-with nav_col2:
-    if st.button("Search", key="nav_search"): st.session_state.page="Search"
-    st.markdown('<div class="nav-item"><img src="search.png"><span>Search</span></div>', unsafe_allow_html=True)
+with col2:
+    if st.button(" ", key="nav_search"):
+        st.session_state.page = "Search"
+    st.markdown('<img src="Search.png" alt="Search">', unsafe_allow_html=True)
 
-with nav_col3:
-    if st.button("Settings", key="nav_settings"): st.session_state.page="Settings"
-    st.markdown('<div class="nav-item"><img src="settings.png"><span>Settings</span></div>', unsafe_allow_html=True)
+with col3:
+    if st.button(" ", key="nav_settings"):
+        st.session_state.page = "Settings"
+    st.markdown('<img src="Dettings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
