@@ -5,7 +5,7 @@ import time
 # ---------------------------
 # PAGE CONFIG
 # ---------------------------
-st.set_page_config(page_title="Rest Quest", layout="wide")
+st.set_page_config(page_title="Rest Quest", layout="centered")
 
 # ---------------------------
 # CUSTOM CSS
@@ -18,6 +18,13 @@ body {
     font-family: 'Segoe UI', sans-serif;
 }
 
+/* ---------- CENTER ALL CONTENT ---------- */
+.css-18e3th9 {  /* Streamlit main container */
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* ---------- TOP LOGO ---------- */
 .logo-container {
     display: flex;
@@ -26,7 +33,7 @@ body {
     margin: 15px 0 25px 0;
 }
 .logo-container img {
-    width: 50px;
+    width: 60px;
     margin-right: 15px;
 }
 .logo-container h2 {
@@ -44,9 +51,6 @@ body {
     justify-content: center;
     align-items: center;
     overflow: hidden;
-}
-.loader-container h1, .loader-container p {
-    color: #0b3d0b;
 }
 .walker {
     width: 40px;
@@ -98,6 +102,7 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
+    max-width: 900px;
     background-color: #ffffff;
     border-top: 2px solid #0b3d0b;
     display: flex;
@@ -106,13 +111,21 @@ body {
     padding: 5px 0;
     z-index: 9999;
 }
-.nav-container img {
-    width: 40px;
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: bold;
+    color: #0b3d0b;
     cursor: pointer;
     transition: transform 0.2s;
 }
-.nav-container img:hover {
-    transform: scale(1.2);
+.nav-item img {
+    width: 35px;
+    margin-bottom: 5px;
+}
+.nav-item:hover {
+    transform: scale(1.1);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -134,6 +147,8 @@ if "page" not in st.session_state:
     st.session_state.page = "Home"
 if "filter_type" not in st.session_state:
     st.session_state.filter_type = "All"
+if "price_range" not in st.session_state:
+    st.session_state.price_range = (int(data["price"].min()), int(data["price"].max()))
 
 # ---------------------------
 # LOADING SCREEN
@@ -142,11 +157,13 @@ if not st.session_state.loaded:
     st.markdown("""
     <div class="loader-container">
         <div class="walker"></div>
-        <h1>Rest Quest</h1>
-        <p>Finding your next home...</p>
-        <div class="leaf" style="left:15%"></div>
-        <div class="leaf" style="left:45%"></div>
-        <div class="leaf" style="left:75%"></div>
+        <h1 style="color:#0b3d0b; font-size:80px; margin-top:20px;">Rest Quest</h1>
+        <p style="color:#0b3d0b; font-size:20px;">Finding your next home...</p>
+        <div class="leaf" style="left:10%; animation-delay:0s;"></div>
+        <div class="leaf" style="left:30%; animation-delay:1s;"></div>
+        <div class="leaf" style="left:50%; animation-delay:2s;"></div>
+        <div class="leaf" style="left:70%; animation-delay:1.5s;"></div>
+        <div class="leaf" style="left:85%; animation-delay:0.5s;"></div>
     </div>
     """, unsafe_allow_html=True)
     time.sleep(3)
@@ -156,24 +173,24 @@ if not st.session_state.loaded:
 # ---------------------------
 # TOP LOGO
 # ---------------------------
-# Use st.image for reliability
-col_logo, col_text = st.columns([1,5])
-with col_logo:
-    st.image("image-removebg-preview.png", width=50)
-with col_text:
-    st.markdown("<h2 style='color:#0b3d0b;'>Rest Quest</h2>", unsafe_allow_html=True)
+st.markdown(f"""
+<div class="logo-container">
+    <img src="logo.png" alt="Logo">
+    <h2>Rest Quest</h2>
+</div>
+""", unsafe_allow_html=True)
 
 # ---------------------------
 # HOME PAGE
 # ---------------------------
 if st.session_state.page == "Home":
-    f1, f2 = st.columns(2)
-    with f1:
-        if st.button("🏠 Rent", key="rent_btn"):
-            st.session_state.filter_type = "Rent"
-    with f2:
-        if st.button("🏷 Sale", key="sale_btn"):
-            st.session_state.filter_type = "Sale"
+    c_all, c1, c2 = st.columns([1,1,1])
+    with c_all:
+        if st.button("All", key="all_btn"): st.session_state.filter_type = "All"
+    with c1:
+        if st.button("🏠 Rent", key="rent_btn"): st.session_state.filter_type = "Rent"
+    with c2:
+        if st.button("🏷 Sale", key="sale_btn"): st.session_state.filter_type = "Sale"
 
     st.markdown("---")
     st.header("Recommended Houses")
@@ -181,11 +198,14 @@ if st.session_state.page == "Home":
     filtered = data.copy()
     if st.session_state.filter_type != "All":
         filtered = filtered[filtered["type"] == st.session_state.filter_type]
+    filtered = filtered[
+        (filtered["price"] >= st.session_state.price_range[0]) &
+        (filtered["price"] <= st.session_state.price_range[1])
+    ]
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
-        st.write(f"📍 {row['location']}")
-        st.write(f"💰 ₱{row['price']:,}")
+        st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
         st.markdown("---")
 
 # ---------------------------
@@ -193,31 +213,29 @@ if st.session_state.page == "Home":
 # ---------------------------
 elif st.session_state.page == "Search":
     st.header("Search Houses")
-
-    # --- Add filters here too
-    f1, f2 = st.columns(2)
-    with f1:
-        if st.button("🏠 Rent", key="search_rent"):
-            st.session_state.filter_type = "Rent"
-    with f2:
-        if st.button("🏷 Sale", key="search_sale"):
-            st.session_state.filter_type = "Sale"
-
     search_query = st.text_input("Search by name or location")
+    
+    price_slider = st.slider(
+        "Price Range",
+        int(data["price"].min()), int(data["price"].max()),
+        st.session_state.price_range
+    )
+    st.session_state.price_range = price_slider
 
     filtered = data.copy()
-    if st.session_state.filter_type != "All":
-        filtered = filtered[filtered["type"] == st.session_state.filter_type]
-
     if search_query:
         filtered = filtered[
             filtered["name"].str.contains(search_query, case=False) |
             filtered["location"].str.contains(search_query, case=False)
         ]
+    filtered = filtered[
+        (filtered["price"] >= st.session_state.price_range[0]) &
+        (filtered["price"] <= st.session_state.price_range[1])
+    ]
 
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
-        st.write(f"{row['location']} | ₱{row['price']:,}")
+        st.write(f"{row['location']} | 💰 ₱{row['price']:,}")
         st.markdown("---")
 
 # ---------------------------
@@ -233,9 +251,14 @@ elif st.session_state.page == "Settings":
     st.subheader("Post Listing")
     st.markdown("""
 📧 [Send listing via email](mailto:listings@restquest.com)  
-
 [Instructions for posting a listing](https://example.com/posting-instructions)
 """)
+    price_slider_set = st.slider(
+        "Select Price Range",
+        int(data["price"].min()), int(data["price"].max()),
+        st.session_state.price_range
+    )
+    st.session_state.price_range = price_slider_set
 
 # ---------------------------
 # SPACE FOR NAV BAR
@@ -243,25 +266,15 @@ elif st.session_state.page == "Settings":
 st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 
 # ---------------------------
-# BOTTOM NAVIGATION
+# BOTTOM NAVIGATION (LOGO + NAME)
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns(3)
 
-# Use st.button for click + st.image separately
-with col1:
-    if st.button("Home", key="nav_home"):
-        st.session_state.page = "Home"
-    st.image("Home.png", width=40)
-
-with col2:
-    if st.button("Search", key="nav_search"):
-        st.session_state.page = "Search"
-    st.image("Search.png", width=40)
-
-with col3:
-    if st.button("Settings", key="nav_settings"):
-        st.session_state.page = "Settings"
-    st.image("Settings.png", width=40)
+pages = [("Home", "home.png"), ("Search", "search.png"), ("Settings", "settings.png")]
+cols = st.columns(3)
+for i, (name, icon) in enumerate(pages):
+    with cols[i]:
+        if st.button(" ", key=f"nav_{name.lower()}"): st.session_state.page = name
+        st.markdown(f'<div class="nav-item"><img src="{icon}"><span>{name}</span></div>', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
