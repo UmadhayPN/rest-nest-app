@@ -235,15 +235,16 @@ st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    if st.image("home_placeholder.png", use_column_width=False, output_format="PNG"):
+    if st.image("Home.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Home"
 
 with col2:
-    if st.image("search_placeholder.png", use_column_width=False, output_format="PNG"):
+    if st.image("Search.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Search"
 
 with col3:
-    if st.image("settings_placeholder.png", use_column_width=False, output_format="PNG"):
+    if st.image("Settiing.png", use_column_width=False, output_format="PNG"):
         st.session_state.page = "Settings"
 
 st.markdown('</div>', unsafe_allow_html=True)
+
