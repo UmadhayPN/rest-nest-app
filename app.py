@@ -45,6 +45,9 @@ body {
     align-items: center;
     overflow: hidden;
 }
+.loader-container h1, .loader-container p {
+    color: #0b3d0b;
+}
 .walker {
     width: 40px;
     height: 80px;
@@ -153,12 +156,12 @@ if not st.session_state.loaded:
 # ---------------------------
 # TOP LOGO
 # ---------------------------
-st.markdown(f"""
-<div class="logo-container">
-    <img src="image-removebg-preview.png" alt="Logo">
-    <h2>Rest Quest</h2>
-</div>
-""", unsafe_allow_html=True)
+# Use st.image for reliability
+col_logo, col_text = st.columns([1,5])
+with col_logo:
+    st.image("image-removebg-preview.png", width=50)
+with col_text:
+    st.markdown("<h2 style='color:#0b3d0b;'>Rest Quest</h2>", unsafe_allow_html=True)
 
 # ---------------------------
 # HOME PAGE
@@ -166,10 +169,10 @@ st.markdown(f"""
 if st.session_state.page == "Home":
     f1, f2 = st.columns(2)
     with f1:
-        if st.button("🏠 Rent", key="rent_btn", help="Show Rent Houses"):
+        if st.button("🏠 Rent", key="rent_btn"):
             st.session_state.filter_type = "Rent"
     with f2:
-        if st.button("🏷 Sale", key="sale_btn", help="Show Sale Houses"):
+        if st.button("🏷 Sale", key="sale_btn"):
             st.session_state.filter_type = "Sale"
 
     st.markdown("---")
@@ -190,9 +193,22 @@ if st.session_state.page == "Home":
 # ---------------------------
 elif st.session_state.page == "Search":
     st.header("Search Houses")
+
+    # --- Add filters here too
+    f1, f2 = st.columns(2)
+    with f1:
+        if st.button("🏠 Rent", key="search_rent"):
+            st.session_state.filter_type = "Rent"
+    with f2:
+        if st.button("🏷 Sale", key="search_sale"):
+            st.session_state.filter_type = "Sale"
+
     search_query = st.text_input("Search by name or location")
 
     filtered = data.copy()
+    if st.session_state.filter_type != "All":
+        filtered = filtered[filtered["type"] == st.session_state.filter_type]
+
     if search_query:
         filtered = filtered[
             filtered["name"].str.contains(search_query, case=False) |
@@ -217,7 +233,7 @@ elif st.session_state.page == "Settings":
     st.subheader("Post Listing")
     st.markdown("""
 📧 [Send listing via email](mailto:listings@restquest.com)  
- 
+
 [Instructions for posting a listing](https://example.com/posting-instructions)
 """)
 
@@ -232,22 +248,20 @@ st.markdown("<br><br><br><br><br>", unsafe_allow_html=True)
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
 col1, col2, col3 = st.columns(3)
 
-# Clickable logos using buttons
+# Use st.button for click + st.image separately
 with col1:
-    if st.button(" ", key="nav_home", help="Home"):
+    if st.button("Home", key="nav_home"):
         st.session_state.page = "Home"
-    st.markdown('<img src="Home.png" alt="Home">', unsafe_allow_html=True)
+    st.image("Home.png", width=40)
 
 with col2:
-    if st.button(" ", key="nav_search", help="Search"):
+    if st.button("Search", key="nav_search"):
         st.session_state.page = "Search"
-    st.markdown('<img src="Search.png" alt="Search">', unsafe_allow_html=True)
+    st.image("Search.png", width=40)
 
 with col3:
-    if st.button(" ", key="nav_settings", help="Settings"):
+    if st.button("Settings", key="nav_settings"):
         st.session_state.page = "Settings"
-    st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
+    st.image("Settings.png", width=40)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
