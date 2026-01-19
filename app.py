@@ -33,7 +33,7 @@ body {
 }
 .logo-container img {
     width: 50px;
-    margin-right: 15px;
+    margin-right: 45px;
 }
 .logo-container h2 {
     color: #0b3d0b;
@@ -294,3 +294,4 @@ with col3:
     st.markdown('<img src="Dettings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
