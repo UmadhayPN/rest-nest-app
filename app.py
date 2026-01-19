@@ -19,9 +19,9 @@ body {
     margin: 0;
 }
 
-/* ---------- TOP LOGO ---------- */
+/* ---------- TOP LOGO (Sticky) ---------- */
 .logo-container {
-    position: fixed;
+    position: sticky;
     top: 0;
     width: 100%;
     display: flex;
@@ -30,6 +30,7 @@ body {
     padding: 15px 0;
     background-color: #fefcf4;
     z-index: 9999;
+    border-bottom: 2px solid #0b3d0b;
 }
 .logo-container img {
     width: 60px;
@@ -127,28 +128,27 @@ body {
     background-color: #145214;
 }
 
-/* ---------- FIXED BOTTOM NAV (BIGGER) ---------- */
+/* ---------- BOTTOM NAVIGATION (Sticky) ---------- */
 .nav-container {
-    position: fixed;
+    position: sticky;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 90px;           /* increased height */
     background-color: #fefcf4;
     border-top: 2px solid #0b3d0b;
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 15px 0;        /* increased padding */
+    padding: 10px 0;
     z-index: 9999;
 }
 .nav-container img {
-    width: 60px;             /* bigger logos */
+    width: 50px;
     cursor: pointer;
     transition: transform 0.2s;
 }
 .nav-container img:hover {
-    transform: scale(1.3);
+    transform: scale(1.2);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -211,17 +211,17 @@ st.markdown("""
 # ---------------------------
 # HOME PAGE
 # ---------------------------
-st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under fixed header
+st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under sticky header
 if st.session_state.page == "Home":
     cols = st.columns([1,1,1])
     with cols[0]:
-        if st.button("All", key="all_btn", help="All houses"):
+        if st.button("All", key="all_btn"):
             st.session_state.filter_type = "All"
     with cols[1]:
-        if st.button("🏠 Rent", key="rent_btn", help="Show Rent Houses"):
+        if st.button("🏠 Rent", key="rent_btn"):
             st.session_state.filter_type = "Rent"
     with cols[2]:
-        if st.button("🏷 Sale", key="sale_btn", help="Show Sale Houses"):
+        if st.button("🏷 Sale", key="sale_btn"):
             st.session_state.filter_type = "Sale"
 
     st.markdown("---")
