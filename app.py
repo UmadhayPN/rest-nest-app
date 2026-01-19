@@ -19,12 +19,19 @@ body {
     margin: 0;
 }
 
-/* ---------- TOP LOGO ---------- */
+/* ---------- FIXED TOP LOGO ---------- */
 .logo-container {
+    position: fixed;
+    top: 0;
+    width: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 20px 0;
+    margin: 0;
+    padding: 10px 0;
+    background-color: #fefcf4;
+    z-index: 9999;
+    border-bottom: 2px solid #0b3d0b;
 }
 .logo-container img {
     width: 50px;
@@ -148,6 +155,12 @@ body {
 .nav-item:hover img {
     transform: scale(1.2);
 }
+
+/* ---------- CONTENT MARGIN FOR FIXED HEADER/FOOTER ---------- */
+.content {
+    padding-top: 120px; /* height of top logo */
+    padding-bottom: 80px; /* height of bottom nav */
+}
 </style>
 """, unsafe_allow_html=True)
 
@@ -206,19 +219,19 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# HOME PAGE
+# PAGE CONTENT
 # ---------------------------
+st.markdown('<div class="content">', unsafe_allow_html=True)
+
+# HOME PAGE
 if st.session_state.page == "Home":
     col_all, col_rent, col_sale = st.columns(3)
     with col_all:
-        if st.button("All", key="all_btn"):
-            st.session_state.filter_type = "All"
+        if st.button("All", key="all_btn"): st.session_state.filter_type = "All"
     with col_rent:
-        if st.button("🏠 Rent", key="rent_btn"):
-            st.session_state.filter_type = "Rent"
+        if st.button("🏠 Rent", key="rent_btn"): st.session_state.filter_type = "Rent"
     with col_sale:
-        if st.button("🏷 Sale", key="sale_btn"):
-            st.session_state.filter_type = "Sale"
+        if st.button("🏷 Sale", key="sale_btn"): st.session_state.filter_type = "Sale"
 
     st.markdown("---")
     st.header("Recommended Houses")
@@ -232,9 +245,7 @@ if st.session_state.page == "Home":
         st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
         st.markdown("---")
 
-# ---------------------------
 # SEARCH PAGE
-# ---------------------------
 elif st.session_state.page == "Search":
     st.header("Search Houses")
     search_query = st.text_input("Search by name or location")
@@ -256,9 +267,7 @@ elif st.session_state.page == "Search":
         st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
         st.markdown("---")
 
-# ---------------------------
 # SETTINGS PAGE
-# ---------------------------
 elif st.session_state.page == "Settings":
     st.header("Settings")
     st.subheader("Get Help")
@@ -269,14 +278,10 @@ elif st.session_state.page == "Settings":
     st.subheader("Post Listing")
     st.markdown("""
 📧 [Send listing via email](mailto:listings@restquest.com)  
-
 [Instructions for posting a listing](https://example.com/posting-instructions)
 """)
 
-# ---------------------------
-# SPACE FOR NAV BAR
-# ---------------------------
-st.markdown("<br><br><br><br>", unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # ---------------------------
 # BOTTOM NAVIGATION
