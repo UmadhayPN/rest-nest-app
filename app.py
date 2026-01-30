@@ -19,7 +19,7 @@ st.markdown("""
 html, body, [class*="stApp"] {
     background-color: #FAFAF7;
     font-family: 'Segoe UI', sans-serif;
-    color: #000000;   /* ✅ make all default text black */
+    color: #000000;   /* ✅ make all text black */
 }
 
 /* HEADER */
@@ -29,17 +29,17 @@ html, body, [class*="stApp"] {
     width: 100%;
     background: #FAFAF7;
     z-index: 1000;
-    padding: 14px 30px;
+    padding: 24px 30px;   /* ✅ more padding so title isn't too high */
     border-bottom: 1px solid #ddd;
-    color: #000000;   /* ✅ header text black */
+    color: #000000;
 }
 
 /* CONTENT */
 .content {
-    margin-top: 90px;
+    margin-top: 110px;   /* ✅ push content down to avoid overlap with header */
     margin-bottom: 120px;
     padding: 0 35px;
-    color: #000000;   /* ✅ content text black */
+    color: #000000;
 }
 
 /* CARD */
@@ -49,14 +49,14 @@ html, body, [class*="stApp"] {
     padding: 18px;
     box-shadow: 0 6px 14px rgba(0,0,0,0.06);
     margin-bottom: 22px;
-    color: #000000;   /* ✅ card text black */
+    color: #000000;
 }
 
 /* PRICE */
 .price {
     font-size: 18px;
     font-weight: 600;
-    color: #000000;   /* ✅ price text black */
+    color: #000000;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -111,7 +111,7 @@ st.markdown('<div class="content">', unsafe_allow_html=True)
 if st.session_state.tab == "Home":
 
     filter_choice = st.radio(
-        "",
+        "Filter by type:",   # ✅ added label so options show
         ["All", "Rent", "Sale"],
         horizontal=True
     )
