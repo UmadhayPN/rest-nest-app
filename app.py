@@ -164,7 +164,7 @@ body {
 # ---------------------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("houses.csv")
+    return pd.read_csv("PH_houses_v2.csv")
 data = load_data()
 
 # ---------------------------
@@ -334,3 +334,4 @@ with col3:
     st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
