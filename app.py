@@ -29,14 +29,14 @@ html, body, [class*="stApp"] {
     width: 100%;
     background: #FAFAF7;
     z-index: 1000;
-    padding: 24px 30px;   /* ✅ more padding so title isn't too high */
+    padding: 40px 30px;   /* ⬆ more padding so title isn't too high */
     border-bottom: 1px solid #ddd;
     color: #000000;
 }
 
 /* CONTENT */
 .content {
-    margin-top: 110px;   /* ✅ push content down to avoid overlap with header */
+    margin-top: 140px;   /* ⬆ push content down to avoid overlap with header */
     margin-bottom: 120px;
     padding: 0 35px;
     color: #000000;
@@ -110,9 +110,11 @@ st.markdown('<div class="content">', unsafe_allow_html=True)
 # ---------- HOME TAB ----------
 if st.session_state.tab == "Home":
 
+    # ✅ Clearer filter label
+    st.markdown("**🏷️ Filter listings by type**")
     filter_choice = st.radio(
-        "Filter by type:",   # ✅ added label so options show
-        ["All", "Rent", "Sale"],
+        label="",   # hide Streamlit’s default label
+        options=["All", "Rent", "Sale"],
         horizontal=True
     )
 
