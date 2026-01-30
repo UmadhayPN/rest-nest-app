@@ -1,11 +1,6 @@
 import streamlit as st
 import pandas as pd
 import math
-# ----------------------------------
-# LOAD DATASET
-# ----------------------------------
-# ✅ Load your actual dataset
-data = pd.read_csv("PH_houses_v2.csv")
 
 # ----------------------------------
 # CONFIG
@@ -58,12 +53,65 @@ html, body, [class*="stApp"] {
     font-size: 18px;
     font-weight: 600;
 }
+
+/* ANDROID BOTTOM NAV */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    background: #FAFAF7;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+}
+
+.nav-item.active {
+    color: #2E7D32;
+    font-weight: 600;
+}
+
+.nav-icon {
+    font-size: 22px;
+}
 </style>
 """, unsafe_allow_html=True)
 
-
-# Expecting columns like: name, location, price, type
-# If column names differ, adjust accordingly
+# ----------------------------------
+# DATA
+# ----------------------------------
+data = pd.DataFrame({
+    "name": [
+        "Modern Apartment", "Cozy Studio", "Family House",
+        "Luxury Condo", "Budget Room", "City Loft",
+        "Suburban Home", "Beachside Stay", "Mountain Cabin"
+    ],
+    "location": [
+        "Manila", "Cebu", "Davao", "BGC",
+        "Quezon City", "Makati", "Laguna", "Palawan", "Baguio"
+    ],
+    "price": [
+        15000, 8000, 22000, 45000,
+        6000, 18000, 20000, 30000, 12000
+    ],
+    "type": [
+        "Rent", "Rent", "Sale", "Sale",
+        "Rent", "Rent", "Sale", "Rent", "Rent"
+    ]
+})
 
 # ----------------------------------
 # SESSION STATE
@@ -71,10 +119,13 @@ html, body, [class*="stApp"] {
 if "page" not in st.session_state:
     st.session_state.page = 1
 
+if "filter" not in st.session_state:
+    st.session_state.filter = "All"
+
 if "tab" not in st.session_state:
     st.session_state.tab = "Home"
 
-ITEMS_PER_PAGE = 10  # ✅ Show 10 houses per page
+ITEMS_PER_PAGE = 3
 
 # ----------------------------------
 # HEADER
@@ -96,13 +147,14 @@ if st.session_state.tab == "Home":
     filter_choice = st.radio(
         "",
         ["All", "Rent", "Sale"],
-        horizontal=True
+        horizontal=True,
+        key="filter"
     )
 
-    if filter_choice == "All":
+    if st.session_state.filter == "All":
         filtered_data = data
     else:
-        filtered_data = data[data["type"].str.lower() == filter_choice.lower()]
+        filtered_data = data[data["type"] == st.session_state.filter]
 
     total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
     st.session_state.page = max(1, min(st.session_state.page, total_pages))
@@ -121,17 +173,18 @@ if st.session_state.tab == "Home":
         </div>
         """, unsafe_allow_html=True)
 
-    # Pagination controls
     c1, c2, c3 = st.columns([1, 2, 1])
     with c1:
         if st.button("⬅ Prev", disabled=st.session_state.page == 1):
             st.session_state.page -= 1
             st.rerun()
+
     with c2:
         st.markdown(
             f"<div style='text-align:center;'>Page {st.session_state.page} of {total_pages}</div>",
             unsafe_allow_html=True
         )
+
     with c3:
         if st.button("Next ➡", disabled=st.session_state.page == total_pages):
             st.session_state.page += 1
@@ -165,19 +218,42 @@ elif st.session_state.tab == "Settings":
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ----------------------------------
-# SIMPLE BOTTOM NAV
+# ANDROID BOTTOM NAV
 # ----------------------------------
-nav_cols = st.columns(3)
-with nav_cols[0]:
-    if st.button("🏠 Home", use_container_width=True):
+st.markdown(f"""
+<div class="bottom-nav">
+    <div class="nav-items">
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Home' else ''}">
+            <div class="nav-icon">🏠</div>
+            Home
+        </div>
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Search' else ''}">
+            <div class="nav-icon">🔍</div>
+            Search
+        </div>
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Settings' else ''}">
+            <div class="nav-icon">⚙️</div>
+            Settings
+        </div>
+
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# Invisible buttons over nav (click handling)
+c1, c2, c3 = st.columns(3)
+with c1:
+    if st.button("Home", key="nav_home"):
         st.session_state.tab = "Home"
         st.rerun()
-with nav_cols[1]:
-    if st.button("🔍 Search", use_container_width=True):
+with c2:
+    if st.button("Search", key="nav_search"):
         st.session_state.tab = "Search"
         st.rerun()
-with nav_cols[2]:
-    if st.button("⚙️ Settings", use_container_width=True):
+with c3:
+    if st.button("Settings", key="nav_settings"):
         st.session_state.tab = "Settings"
         st.rerun()
-
