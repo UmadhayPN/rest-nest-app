@@ -151,10 +151,11 @@ if st.session_state.tab == "Home":
         key="filter"
     )
 
-    if st.session_state.filter == "All":
+    # ✅ FIXED FILTER
+    if filter_choice == "All":
         filtered_data = data
     else:
-        filtered_data = data[data["type"] == st.session_state.filter]
+        filtered_data = data[data["type"] == filter_choice]
 
     total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
     st.session_state.page = max(1, min(st.session_state.page, total_pages))
@@ -243,17 +244,17 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# Invisible buttons over nav (click handling)
-c1, c2, c3 = st.columns(3)
-with c1:
+# ✅ FIXED invisible buttons overlay (aligned with nav)
+nav_cols = st.columns(3)
+with nav_cols[0]:
     if st.button("Home", key="nav_home"):
         st.session_state.tab = "Home"
         st.rerun()
-with c2:
+with nav_cols[1]:
     if st.button("Search", key="nav_search"):
         st.session_state.tab = "Search"
         st.rerun()
-with c3:
+with nav_cols[2]:
     if st.button("Settings", key="nav_settings"):
         st.session_state.tab = "Settings"
         st.rerun()
