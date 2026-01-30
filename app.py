@@ -1,297 +1,183 @@
 import streamlit as st
 import pandas as pd
-import time
+import math
 
-# ---------------------------
+# -------------------------------
 # PAGE CONFIG
-# ---------------------------
-st.set_page_config(page_title="Rest Quest", layout="wide")
+# -------------------------------
+st.set_page_config(
+    page_title="Rest Quest",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
 
-# ---------------------------
-# CUSTOM CSS
-# ---------------------------
+# -------------------------------
+# GLOBAL STYLES
+# -------------------------------
 st.markdown("""
 <style>
-body {
-    background-color: #fefcf4;
-    color: #0b3d0b;
+html, body, [class*="stApp"] {
+    background-color: #FAFAF7;
     font-family: 'Segoe UI', sans-serif;
 }
 
-/* ---------- TOP HEADER ---------- */
-.logo-container {
-    position: sticky;
-    top: 0;
-    background: #fefcf4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    border-bottom: 2px solid #0b3d0b;
-    z-index: 9999;
-}
-.logo-container img {
-    width: 60px;
-    margin-right: 15px;
-}
-.logo-container h2 {
-    margin: 0;
-    font-size: 32px;
-    font-weight: bold;
-}
-
-/* ---------- LOADING SCREEN ---------- */
-.loader-container {
+/* FIXED HEADER */
+.header {
     position: fixed;
-    inset: 0;
-    background: linear-gradient(#e8efe8, #fefcf4);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    z-index: 10000;
-}
-.walker {
-    width: 40px;
-    height: 80px;
-    border: 3px solid #0b3d0b;
-    border-radius: 20px;
-    position: relative;
-    animation: walk 1s infinite alternate;
-}
-.walker::before {
-    content: '';
-    width: 14px;
-    height: 14px;
-    background: #0b3d0b;
-    border-radius: 50%;
-    position: absolute;
-    top: -20px;
-    left: 10px;
-}
-@keyframes walk {
-    from { transform: translateX(-30px); }
-    to { transform: translateX(30px); }
+    top: 0;
+    width: 100%;
+    background: #FAFAF7;
+    z-index: 1000;
+    padding: 12px 24px;
+    border-bottom: 1px solid #ddd;
 }
 
-.leaf {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: #6b8f71;
-    border-radius: 50%;
-    opacity: 0.4;
-    animation: fall linear infinite;
-}
-@keyframes fall {
-    from { transform: translateY(-100px); }
-    to { transform: translateY(100vh); }
-}
-
-/* ---------- BOTTOM NAV ---------- */
-.nav-container {
-    position: sticky;
+/* FIXED BOTTOM NAV */
+.bottom-nav {
+    position: fixed;
     bottom: 0;
-    background: #fefcf4;
-    border-top: 2px solid #0b3d0b;
-    display: flex;
-    justify-content: center;
-    gap: 60px;
-    padding: 12px;
-    z-index: 9999;
+    width: 100%;
+    background: #FAFAF7;
+    border-top: 1px solid #ddd;
+    padding: 10px 0;
+    z-index: 1000;
 }
-.nav-container img {
-    width: 48px;
-    cursor: pointer;
+
+/* CONTENT AREA */
+.content {
+    margin-top: 90px;
+    margin-bottom: 90px;
+    padding: 0 40px;
+}
+
+/* HOUSE CARD */
+.card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+    margin-bottom: 20px;
+}
+
+/* PRICE */
+.price {
+    font-size: 18px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* PAGINATION */
+.pagination {
+    text-align: center;
+    margin: 20px 0;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ---------------------------
-# LOAD DATA
-# ---------------------------
-@st.cache_data
-def load_data():
-    df = pd.read_csv("PH_houses_v2.csv")
+# -------------------------------
+# SAMPLE DATA (SAFE)
+# -------------------------------
+data = pd.DataFrame({
+    "name": [
+        "Modern Apartment",
+        "Cozy Studio",
+        "Family House",
+        "Luxury Condo",
+        "Budget Room",
+        "City Loft",
+        "Suburban Home",
+        "Beachside Stay"
+    ],
+    "location": [
+        "Manila", "Cebu", "Davao", "BGC",
+        "Quezon City", "Makati", "Laguna", "Palawan"
+    ],
+    "price": [
+        15000, 8000, 22000, 45000,
+        6000, 18000, 20000, 30000
+    ],
+    "type": [
+        "Rent", "Rent", "Sale", "Sale",
+        "Rent", "Rent", "Sale", "Rent"
+    ]
+})
 
-    df["price"] = (
-        df["price"].astype(str)
-        .str.replace("₱", "", regex=False)
-        .str.replace(",", "", regex=False)
-        .str.strip()
-    )
-    df["price"] = pd.to_numeric(df["price"], errors="coerce")
-    return df.dropna(subset=["price"])
-
-data = load_data()
-
-# ---------------------------
-# SESSION STATES
-# ---------------------------
-if "loaded" not in st.session_state:
-    st.session_state.loaded = False
-
+# -------------------------------
+# SESSION STATE
+# -------------------------------
 if "page" not in st.session_state:
-    st.session_state.page = "Home"
+    st.session_state.page = 1
 
-if "home_filter" not in st.session_state:
-    st.session_state.home_filter = "All"
+ITEMS_PER_PAGE = 3
+total_pages = math.ceil(len(data) / ITEMS_PER_PAGE)
 
-if "search_filter" not in st.session_state:
-    st.session_state.search_filter = "All"
-
-if "price_range" not in st.session_state:
-    st.session_state.price_range = (
-        int(data.price.min()),
-        int(data.price.max())
-    )
-
-# ---------------------------
-# LOADING SCREEN
-# ---------------------------
-if not st.session_state.loaded:
-    st.markdown("""
-    <div class="loader-container">
-        <h1>Rest Quest</h1>
-        <div class="walker"></div>
-        <div class="leaf" style="left:10%; animation-duration:6s;"></div>
-        <div class="leaf" style="left:30%; animation-duration:9s;"></div>
-        <div class="leaf" style="left:55%; animation-duration:7s;"></div>
-        <div class="leaf" style="left:75%; animation-duration:10s;"></div>
-        <div class="leaf" style="left:90%; animation-duration:8s;"></div>
-    </div>
-    """, unsafe_allow_html=True)
-    time.sleep(3)
-    st.session_state.loaded = True
-    st.rerun()
-
-# ---------------------------
+# -------------------------------
 # HEADER
-# ---------------------------
+# -------------------------------
 st.markdown("""
-<div class="logo-container">
-    <img src="image-removebg-preview.png">
-    <h2>Rest Quest</h2>
+<div class="header">
+    <h2>🏠 Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
+# -------------------------------
+# CONTENT
+# -------------------------------
+st.markdown('<div class="content">', unsafe_allow_html=True)
 
-# ---------------------------
-# HOME PAGE
-# ---------------------------
-if st.session_state.page == "Home":
+# FILTER TABS
+filter_choice = st.radio(
+    "",
+    ["All", "Rent", "Sale"],
+    horizontal=True
+)
 
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if st.button("All"):
-            st.session_state.home_filter = "All"
-    with c2:
-        if st.button("🏠 Rent"):
-            st.session_state.home_filter = "Rent"
-    with c3:
-        if st.button("🏷 Sale"):
-            st.session_state.home_filter = "Sale"
+filtered_data = data if filter_choice == "All" else data[data["type"] == filter_choice]
 
-    st.header("Recommended Houses")
+# PAGINATION SLICE
+start = (st.session_state.page - 1) * ITEMS_PER_PAGE
+end = start + ITEMS_PER_PAGE
+page_data = filtered_data.iloc[start:end]
 
-    df = data.copy()
-    if st.session_state.home_filter != "All":
-        df = df[df["type"] == st.session_state.home_filter]
+# HOUSE CARDS
+for _, row in page_data.iterrows():
+    st.markdown(f"""
+    <div class="card">
+        <h4>🏡 {row['name']}</h4>
+        <p>📍 {row['location']}</p>
+        <p class="price">💰 ₱{int(row['price']):,}</p>
+        <p>📌 {row['type']}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    for _, r in df.iterrows():
-        st.subheader(r["name"])
-        st.write(f"📍 {r['location']}")
-        st.write(f"💰 ₱{int(r['price']):,}")
-        st.markdown("---")
+# PAGINATION CONTROLS
+col1, col2, col3 = st.columns([1,2,1])
 
-# ---------------------------
-# SEARCH PAGE
-# ---------------------------
-elif st.session_state.page == "Search":
+with col1:
+    if st.button("⬅ Prev") and st.session_state.page > 1:
+        st.session_state.page -= 1
 
-    st.header("Search Houses")
-
-    c1, c2, c3 = st.columns(3)
-    with c1:
-        if st.button("All", key="s_all"):
-            st.session_state.search_filter = "All"
-    with c2:
-        if st.button("🏠 Rent", key="s_rent"):
-            st.session_state.search_filter = "Rent"
-    with c3:
-        if st.button("🏷 Sale", key="s_sale"):
-            st.session_state.search_filter = "Sale"
-
-    st.session_state.price_range = st.slider(
-        "Price Range (₱)",
-        int(data.price.min()),
-        int(data.price.max()),
-        st.session_state.price_range,
-        step=1000
+with col2:
+    st.markdown(
+        f"<div class='pagination'>Page {st.session_state.page} of {total_pages}</div>",
+        unsafe_allow_html=True
     )
 
-    query = st.text_input("Search by name or location")
-
-    df = data.copy()
-
-    if query:
-        df = df[
-            df.name.str.contains(query, case=False) |
-            df.location.str.contains(query, case=False)
-        ]
-
-    if st.session_state.search_filter != "All":
-        df = df[df.type == st.session_state.search_filter]
-
-    df = df[
-        (df.price >= st.session_state.price_range[0]) &
-        (df.price <= st.session_state.price_range[1])
-    ]
-
-    for _, r in df.iterrows():
-        st.subheader(r["name"])
-        st.write(f"📍 {r['location']} | 💰 ₱{int(r['price']):,}")
-        st.markdown("---")
-
-# ---------------------------
-# SETTINGS PAGE
-# ---------------------------
-elif st.session_state.page == "Settings":
-
-    st.header("Settings")
-
-    st.subheader("Help")
-    st.markdown("""
-📧 support@restquest.com  
-📘 [How to Use Rest Quest](https://example.com)
-""")
-
-    st.subheader("Post a Listing")
-    st.markdown("""
-📧 listings@restquest.com  
-📄 [Posting Instructions](https://example.com/posting)
-""")
-
-# ---------------------------
-# BOTTOM NAV
-# ---------------------------
-st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-
-c1, c2, c3 = st.columns(3)
-with c1:
-    if st.button(" ", key="nav_home"):
-        st.session_state.page = "Home"
-    st.markdown('<img src="Home.png">', unsafe_allow_html=True)
-
-with c2:
-    if st.button(" ", key="nav_search"):
-        st.session_state.page = "Search"
-    st.markdown('<img src="Search.png">', unsafe_allow_html=True)
-
-with c3:
-    if st.button(" ", key="nav_settings"):
-        st.session_state.page = "Settings"
-    st.markdown('<img src="Settings.png">', unsafe_allow_html=True)
+with col3:
+    if st.button("Next ➡") and st.session_state.page < total_pages:
+        st.session_state.page += 1
 
 st.markdown('</div>', unsafe_allow_html=True)
+
+# -------------------------------
+# BOTTOM NAVIGATION
+# -------------------------------
+st.markdown("""
+<div class="bottom-nav">
+    <div style="display:flex; justify-content:space-around;">
+        <div>🏠 Home</div>
+        <div>🔍 Search</div>
+        <div>⚙️ Settings</div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
