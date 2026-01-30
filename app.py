@@ -77,6 +77,7 @@ html, body, [class*="stApp"] {
     align-items: center;
     font-size: 12px;
     color: #888;
+    cursor: pointer;
 }
 
 .nav-item.active {
@@ -91,36 +92,10 @@ html, body, [class*="stApp"] {
 """, unsafe_allow_html=True)
 
 # ----------------------------------
-# DATA
-# ----------------------------------
-data = pd.DataFrame({
-    "name": [
-        "Modern Apartment", "Cozy Studio", "Family House",
-        "Luxury Condo", "Budget Room", "City Loft",
-        "Suburban Home", "Beachside Stay", "Mountain Cabin"
-    ],
-    "location": [
-        "Manila", "Cebu", "Davao", "BGC",
-        "Quezon City", "Makati", "Laguna", "Palawan", "Baguio"
-    ],
-    "price": [
-        15000, 8000, 22000, 45000,
-        6000, 18000, 20000, 30000, 12000
-    ],
-    "type": [
-        "Rent", "Rent", "Sale", "Sale",
-        "Rent", "Rent", "Sale", "Rent", "Rent"
-    ]
-})
-
-# ----------------------------------
 # SESSION STATE
 # ----------------------------------
 if "page" not in st.session_state:
     st.session_state.page = 1
-
-if "filter" not in st.session_state:
-    st.session_state.filter = "All"
 
 if "tab" not in st.session_state:
     st.session_state.tab = "Home"
@@ -147,8 +122,7 @@ if st.session_state.tab == "Home":
     filter_choice = st.radio(
         "",
         ["All", "Rent", "Sale"],
-        horizontal=True,
-        key="filter"
+        horizontal=True
     )
 
     # ✅ FIXED FILTER
@@ -219,42 +193,18 @@ elif st.session_state.tab == "Settings":
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ----------------------------------
-# ANDROID BOTTOM NAV
+# ANDROID BOTTOM NAV (fixed)
 # ----------------------------------
-st.markdown(f"""
-<div class="bottom-nav">
-    <div class="nav-items">
-
-        <div class="nav-item {'active' if st.session_state.tab == 'Home' else ''}">
-            <div class="nav-icon">🏠</div>
-            Home
-        </div>
-
-        <div class="nav-item {'active' if st.session_state.tab == 'Search' else ''}">
-            <div class="nav-icon">🔍</div>
-            Search
-        </div>
-
-        <div class="nav-item {'active' if st.session_state.tab == 'Settings' else ''}">
-            <div class="nav-icon">⚙️</div>
-            Settings
-        </div>
-
-    </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ✅ FIXED invisible buttons overlay (aligned with nav)
 nav_cols = st.columns(3)
 with nav_cols[0]:
-    if st.button("Home", key="nav_home"):
+    if st.button("🏠 Home", use_container_width=True):
         st.session_state.tab = "Home"
         st.rerun()
 with nav_cols[1]:
-    if st.button("Search", key="nav_search"):
+    if st.button("🔍 Search", use_container_width=True):
         st.session_state.tab = "Search"
         st.rerun()
 with nav_cols[2]:
-    if st.button("Settings", key="nav_settings"):
+    if st.button("⚙️ Settings", use_container_width=True):
         st.session_state.tab = "Settings"
         st.rerun()
