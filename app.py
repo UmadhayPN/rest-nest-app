@@ -164,8 +164,20 @@ body {
 # ---------------------------
 @st.cache_data
 def load_data():
-    return pd.read_csv("PH_houses_v2.csv")
-data = load_data()
+    df = pd.read_csv("PH_houses_v2.csv")
+
+    # Clean and convert price column
+    df["price"] = (
+        df["price"]
+        .astype(str)
+        .str.replace("₱", "", regex=False)
+        .str.replace(",", "", regex=False)
+        .str.strip()
+    )
+
+    df["price"] = pd.to_numeric(df["price"], errors="coerce")
+
+    return df
 
 # ---------------------------
 # SESSION STATES
@@ -334,5 +346,6 @@ with col3:
     st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
