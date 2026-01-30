@@ -1,6 +1,11 @@
 import streamlit as st
 import pandas as pd
 import math
+# ----------------------------------
+# LOAD DATASET
+# ----------------------------------
+# ✅ Load your actual dataset
+data = pd.read_csv("PH_houses_v2.csv")
 
 # ----------------------------------
 # CONFIG
@@ -56,11 +61,6 @@ html, body, [class*="stApp"] {
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------------
-# LOAD DATASET
-# ----------------------------------
-# ✅ Load your actual dataset
-data = pd.read_csv("PH_houses_v2.csv")
 
 # Expecting columns like: name, location, price, type
 # If column names differ, adjust accordingly
@@ -180,3 +180,4 @@ with nav_cols[2]:
     if st.button("⚙️ Settings", use_container_width=True):
         st.session_state.tab = "Settings"
         st.rerun()
+
