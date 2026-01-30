@@ -16,51 +16,40 @@ body {
     background-color: #fefcf4;
     color: #0b3d0b;
     font-family: 'Segoe UI', sans-serif;
-    margin: 0;
 }
 
-/* ---------- TOP LOGO (Sticky) ---------- */
+/* ---------- TOP HEADER ---------- */
 .logo-container {
     position: sticky;
     top: 0;
-    width: 100%;
+    background: #fefcf4;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 15px 0;
-    background-color: #fefcf4;
-    z-index: 9999;
+    padding: 15px;
     border-bottom: 2px solid #0b3d0b;
+    z-index: 9999;
 }
 .logo-container img {
     width: 60px;
-    margin-right: 20px;
+    margin-right: 15px;
 }
 .logo-container h2 {
-    color: #0b3d0b;
-    font-weight: bold;
-    font-size: 32px;
     margin: 0;
+    font-size: 32px;
+    font-weight: bold;
 }
 
 /* ---------- LOADING SCREEN ---------- */
 .loader-container {
     position: fixed;
-    top:0; left:0;
-    width:100%;
-    height:100vh;
+    inset: 0;
     background: linear-gradient(#e8efe8, #fefcf4);
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    z-index:10000;
-}
-.loader-container h1 {
-    color: #0b3d0b;
-    font-size: 64px;
-    text-align: center;
-    margin-bottom:50px;
+    justify-content: center;
+    z-index: 10000;
 }
 .walker {
     width: 40px;
@@ -72,34 +61,17 @@ body {
 }
 .walker::before {
     content: '';
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: #0b3d0b;
     border-radius: 50%;
     position: absolute;
-    top: -18px;
-    left: 11px;
+    top: -20px;
+    left: 10px;
 }
-@keyframes walk { 0% { transform: translateX(-25px); } 100% { transform: translateX(25px); } }
-
-.cityscape {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    margin-top:50px;
-}
-.building {
-    width: 30px;
-    height: 60px;
-    background-color: #0b3d0b;
-    margin: 0 5px;
-}
-.tree {
-    width: 20px;
-    height: 40px;
-    background-color: #145214;
-    margin: 0 5px;
-    border-radius: 4px;
+@keyframes walk {
+    from { transform: translateX(-30px); }
+    to { transform: translateX(30px); }
 }
 
 .leaf {
@@ -107,78 +79,52 @@ body {
     width: 10px;
     height: 10px;
     background: #6b8f71;
-    opacity: 0.3;
-    border-radius:50%;
+    border-radius: 50%;
+    opacity: 0.4;
     animation: fall linear infinite;
 }
-.leaf:nth-child(1) { animation-duration: 6s; animation-delay: 0s; left: 10%; }
-.leaf:nth-child(2) { animation-duration: 8s; animation-delay: 1s; left: 30%; }
-.leaf:nth-child(3) { animation-duration: 7s; animation-delay: 0.5s; left: 50%; }
-.leaf:nth-child(4) { animation-duration: 5s; animation-delay: 1.5s; left: 70%; }
-.leaf:nth-child(5) { animation-duration: 9s; animation-delay: 0.8s; left: 85%; }
-@keyframes fall { 0% { transform: translateY(-100px); } 100% { transform: translateY(100vh); } }
-
-/* ---------- FILTER BUTTONS ---------- */
-.filter-btn {
-    background-color: #0b3d0b;
-    color: #fefcf4;
-    border-radius: 8px;
-    padding: 8px 15px;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    margin-right:5px;
-}
-.filter-btn:hover {
-    background-color: #145214;
+@keyframes fall {
+    from { transform: translateY(-100px); }
+    to { transform: translateY(100vh); }
 }
 
-/* ---------- BOTTOM NAVIGATION (Sticky & Centered) ---------- */
+/* ---------- BOTTOM NAV ---------- */
 .nav-container {
     position: sticky;
     bottom: 0;
-    left: 0;
-    width: 100%;
-    background-color: #fefcf4;
+    background: #fefcf4;
     border-top: 2px solid #0b3d0b;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 10px 0;
+    gap: 60px;
+    padding: 12px;
     z-index: 9999;
 }
 .nav-container img {
-    width: 50px;
+    width: 48px;
     cursor: pointer;
-    margin: 0 20px;
-    transition: transform 0.2s;
-}
-.nav-container img:hover {
-    transform: scale(1.2);
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------------------
-# LOAD DATASET
+# LOAD DATA
 # ---------------------------
 @st.cache_data
 def load_data():
     df = pd.read_csv("PH_houses_v2.csv")
 
-    # Clean and convert price column
     df["price"] = (
-        df["price"]
-        .astype(str)
+        df["price"].astype(str)
         .str.replace("₱", "", regex=False)
         .str.replace(",", "", regex=False)
         .str.strip()
     )
-
     df["price"] = pd.to_numeric(df["price"], errors="coerce")
+    return df.dropna(subset=["price"])
 
-    return df
 data = load_data()
+
 # ---------------------------
 # SESSION STATES
 # ---------------------------
@@ -188,14 +134,18 @@ if "loaded" not in st.session_state:
 if "page" not in st.session_state:
     st.session_state.page = "Home"
 
-if "filter_type" not in st.session_state:
-    st.session_state.filter_type = "All"
+if "home_filter" not in st.session_state:
+    st.session_state.home_filter = "All"
 
-# Price range (handle NaN safely)
+if "search_filter" not in st.session_state:
+    st.session_state.search_filter = "All"
+
 if "price_range" not in st.session_state:
-    min_price = int(data["price"].min())
-    max_price = int(data["price"].max())
-    st.session_state.price_range = (min_price, max_price)
+    st.session_state.price_range = (
+        int(data.price.min()),
+        int(data.price.max())
+    )
+
 # ---------------------------
 # LOADING SCREEN
 # ---------------------------
@@ -204,18 +154,11 @@ if not st.session_state.loaded:
     <div class="loader-container">
         <h1>Rest Quest</h1>
         <div class="walker"></div>
-        <div class="cityscape">
-            <div class="building"></div>
-            <div class="tree"></div>
-            <div class="building"></div>
-            <div class="tree"></div>
-            <div class="building"></div>
-        </div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
-        <div class="leaf"></div>
+        <div class="leaf" style="left:10%; animation-duration:6s;"></div>
+        <div class="leaf" style="left:30%; animation-duration:9s;"></div>
+        <div class="leaf" style="left:55%; animation-duration:7s;"></div>
+        <div class="leaf" style="left:75%; animation-duration:10s;"></div>
+        <div class="leaf" style="left:90%; animation-duration:8s;"></div>
     </div>
     """, unsafe_allow_html=True)
     time.sleep(3)
@@ -223,135 +166,132 @@ if not st.session_state.loaded:
     st.rerun()
 
 # ---------------------------
-# TOP LOGO
+# HEADER
 # ---------------------------
 st.markdown("""
 <div class="logo-container">
-    <img src="image-removebg-preview.png" alt="Logo">
+    <img src="image-removebg-preview.png">
     <h2>Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
 
-st.markdown("<br><br><br>", unsafe_allow_html=True)  # space under header
+st.markdown("<br>", unsafe_allow_html=True)
 
 # ---------------------------
 # HOME PAGE
 # ---------------------------
 if st.session_state.page == "Home":
-    cols = st.columns([1,1,1])
-    with cols[0]:
-        if st.button("All", key="all_btn"):
-            st.session_state.filter_type = "All"
-    with cols[1]:
-        if st.button("🏠 Rent", key="rent_btn"):
-            st.session_state.filter_type = "Rent"
-    with cols[2]:
-        if st.button("🏷 Sale", key="sale_btn"):
-            st.session_state.filter_type = "Sale"
 
-    st.markdown("---")
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("All"):
+            st.session_state.home_filter = "All"
+    with c2:
+        if st.button("🏠 Rent"):
+            st.session_state.home_filter = "Rent"
+    with c3:
+        if st.button("🏷 Sale"):
+            st.session_state.home_filter = "Sale"
+
     st.header("Recommended Houses")
 
-    filtered = data.copy()
-    if st.session_state.filter_type != "All":
-        filtered = filtered[filtered["type"] == st.session_state.filter_type]
+    df = data.copy()
+    if st.session_state.home_filter != "All":
+        df = df[df["type"] == st.session_state.home_filter]
 
-    for _, row in filtered.iterrows():
-        st.subheader(row["name"])
-        st.write(f"📍 {row['location']}")
-        st.write(f"💰 ₱{int(row['price']):,}")
+    for _, r in df.iterrows():
+        st.subheader(r["name"])
+        st.write(f"📍 {r['location']}")
+        st.write(f"💰 ₱{int(r['price']):,}")
         st.markdown("---")
 
 # ---------------------------
 # SEARCH PAGE
 # ---------------------------
 elif st.session_state.page == "Search":
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+
     st.header("Search Houses")
 
-    # Rent/Sale/All buttons
-    cols = st.columns([1,1,1])
-    with cols[0]:
-        if st.button("All", key="search_all_btn"):
-            st.session_state.filter_type = "All"
-    with cols[1]:
-        if st.button("🏠 Rent", key="search_rent_btn"):
-            st.session_state.filter_type = "Rent"
-    with cols[2]:
-        if st.button("🏷 Sale", key="search_sale_btn"):
-            st.session_state.filter_type = "Sale"
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        if st.button("All", key="s_all"):
+            st.session_state.search_filter = "All"
+    with c2:
+        if st.button("🏠 Rent", key="s_rent"):
+            st.session_state.search_filter = "Rent"
+    with c3:
+        if st.button("🏷 Sale", key="s_sale"):
+            st.session_state.search_filter = "Sale"
 
-    # Price range slider
-    min_price = int(data['price'].min())
-    max_price = int(data['price'].max())
     st.session_state.price_range = st.slider(
         "Price Range (₱)",
-        min_value=min_price,
-        max_value=max_price,
-        value=st.session_state.price_range,
+        int(data.price.min()),
+        int(data.price.max()),
+        st.session_state.price_range,
         step=1000
     )
 
-    search_query = st.text_input("Search by name or location")
-    filtered = data.copy()
-    if search_query:
-        filtered = filtered[
-            filtered["name"].str.contains(search_query, case=False) |
-            filtered["location"].str.contains(search_query, case=False)
-        ]
-    if st.session_state.filter_type != "All":
-        filtered = filtered[filtered["type"] == st.session_state.filter_type]
+    query = st.text_input("Search by name or location")
 
-    filtered = filtered[
-        (filtered['price'] >= st.session_state.price_range[0]) &
-        (filtered['price'] <= st.session_state.price_range[1])
+    df = data.copy()
+
+    if query:
+        df = df[
+            df.name.str.contains(query, case=False) |
+            df.location.str.contains(query, case=False)
+        ]
+
+    if st.session_state.search_filter != "All":
+        df = df[df.type == st.session_state.search_filter]
+
+    df = df[
+        (df.price >= st.session_state.price_range[0]) &
+        (df.price <= st.session_state.price_range[1])
     ]
 
-    for _, row in filtered.iterrows():
-        st.subheader(row["name"])
-        st.write(f"📍 {row['location']} | 💰 ₱{row['price']:,}")
+    for _, r in df.iterrows():
+        st.subheader(r["name"])
+        st.write(f"📍 {r['location']} | 💰 ₱{int(r['price']):,}")
         st.markdown("---")
 
 # ---------------------------
 # SETTINGS PAGE
 # ---------------------------
 elif st.session_state.page == "Settings":
-    st.markdown("<br><br><br>", unsafe_allow_html=True)
+
     st.header("Settings")
-    st.subheader("Get Help")
+
+    st.subheader("Help")
     st.markdown("""
 📧 support@restquest.com  
 📘 [How to Use Rest Quest](https://example.com)
 """)
-    st.subheader("Post Listing")
+
+    st.subheader("Post a Listing")
     st.markdown("""
-📧 [Send listing via email](mailto:listings@restquest.com)  
-[Instructions for posting a listing](https://example.com/posting-instructions)
+📧 listings@restquest.com  
+📄 [Posting Instructions](https://example.com/posting)
 """)
 
 # ---------------------------
-# BOTTOM NAVIGATION
+# BOTTOM NAV
 # ---------------------------
 st.markdown('<div class="nav-container">', unsafe_allow_html=True)
-col1, col2, col3 = st.columns(3)
 
-with col1:
+c1, c2, c3 = st.columns(3)
+with c1:
     if st.button(" ", key="nav_home"):
         st.session_state.page = "Home"
-    st.markdown('<img src="Home.png" alt="Home">', unsafe_allow_html=True)
+    st.markdown('<img src="Home.png">', unsafe_allow_html=True)
 
-with col2:
+with c2:
     if st.button(" ", key="nav_search"):
         st.session_state.page = "Search"
-    st.markdown('<img src="Search.png" alt="Search">', unsafe_allow_html=True)
+    st.markdown('<img src="Search.png">', unsafe_allow_html=True)
 
-with col3:
+with c3:
     if st.button(" ", key="nav_settings"):
         st.session_state.page = "Settings"
-    st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
+    st.markdown('<img src="Settings.png">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
-
-
-
-
