@@ -265,6 +265,9 @@ st.markdown('</div>', unsafe_allow_html=True)
 # ----------------------------------
 # SIMPLE BOTTOM NAV
 # ----------------------------------
+# ----------------------------------
+# SIMPLE BOTTOM NAV
+# ----------------------------------
 nav_cols = st.columns(3)
 with nav_cols[0]:
     if st.button("🏠 Home", use_container_width=True):
@@ -272,3 +275,11 @@ with nav_cols[0]:
         st.rerun()
 with nav_cols[1]:
     if st.button("🔍 Search", use_container_width=True):
+        st.session_state.tab = "Search"
+        st.rerun()
+with nav_cols[2]:
+    if st.button("⚙️ Settings", use_container_width=True):
+        st.session_state.tab = "Settings"
+        st.rerun()
+
+
