@@ -178,19 +178,24 @@ def load_data():
     df["price"] = pd.to_numeric(df["price"], errors="coerce")
 
     return df
-
+data = load_data()
 # ---------------------------
 # SESSION STATES
 # ---------------------------
 if "loaded" not in st.session_state:
     st.session_state.loaded = False
+
 if "page" not in st.session_state:
     st.session_state.page = "Home"
+
 if "filter_type" not in st.session_state:
     st.session_state.filter_type = "All"
-if "price_range" not in st.session_state:
-    st.session_state.price_range = (data['price'].min(), data['price'].max())
 
+# Price range (handle NaN safely)
+if "price_range" not in st.session_state:
+    min_price = int(data["price"].min())
+    max_price = int(data["price"].max())
+    st.session_state.price_range = (min_price, max_price)
 # ---------------------------
 # LOADING SCREEN
 # ---------------------------
@@ -346,6 +351,7 @@ with col3:
     st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
 
 
