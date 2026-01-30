@@ -69,7 +69,7 @@ div[role="radiogroup"] > label {
     margin-right: 8px;
     cursor: pointer;
     font-weight: 500;
-    color: #000000;
+    color: #000000;   /* ✅ force label text to black */
 }
 
 div[role="radiogroup"] > label:hover {
@@ -78,7 +78,7 @@ div[role="radiogroup"] > label:hover {
 
 div[role="radiogroup"] input:checked + div {
     background: #ff4b4b;
-    color: #fff;
+    color: #000000;   /* ✅ keep selected text black */
     border: 1px solid #ff4b4b;
     border-radius: 20px;
     padding: 6px 16px;
@@ -134,7 +134,6 @@ st.markdown('<div class="content">', unsafe_allow_html=True)
 # ---------- HOME TAB ----------
 if st.session_state.tab == "Home":
 
-    # ✅ Properly labeled radio buttons
     filter_choice = st.radio(
         "🏷️ Filter listings by type",
         ["All", "Rent", "Sale"],
