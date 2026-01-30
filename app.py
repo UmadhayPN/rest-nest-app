@@ -242,7 +242,7 @@ if st.session_state.page == "Home":
     for _, row in filtered.iterrows():
         st.subheader(row["name"])
         st.write(f"📍 {row['location']}")
-        st.write(f"💰 ₱{row['price']:,}")
+        st.write(f"💰 ₱{int(row['price']):,}")
         st.markdown("---")
 
 # ---------------------------
@@ -334,4 +334,5 @@ with col3:
     st.markdown('<img src="Settings.png" alt="Settings">', unsafe_allow_html=True)
 
 st.markdown('</div>', unsafe_allow_html=True)
+
 
