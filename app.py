@@ -188,7 +188,15 @@ elif st.session_state.tab == "Search":
         data["location"].str.contains(query, case=False)
     ] if query else data
 
-    for _, row in results.iterrows():
+    # ✅ Add pagination to Search results
+    total_pages = max(1, math.ceil(len(results) / ITEMS_PER_PAGE))
+    st.session_state.page = max(1, min(st.session_state.page, total_pages))
+
+    start = (st.session_state.page - 1) * ITEMS_PER_PAGE
+    end = start + ITEMS_PER_PAGE
+    page_results = results.iloc[start:end]
+
+    for _, row in page_results.iterrows():
         st.markdown(f"""
         <div class="card">
             <h4>{row['name']}</h4>
@@ -196,6 +204,22 @@ elif st.session_state.tab == "Search":
             <p class="price">₱{row['price']:,}</p>
         </div>
         """, unsafe_allow_html=True)
+
+    # Pagination controls for Search
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c1:
+        if st.button("⬅ Prev", disabled=st.session_state.page == 1):
+            st.session_state.page -= 1
+            st.rerun()
+    with c2:
+        st.markdown(
+            f"<div style='text-align:center;'>Page {st.session_state.page} of {total_pages}</div>",
+            unsafe_allow_html=True
+        )
+    with c3:
+        if st.button("Next ➡", disabled=st.session_state.page == total_pages):
+            st.session_state.page += 1
+            st.rerun()
 
 # ---------- SETTINGS TAB ----------
 elif st.session_state.tab == "Settings":
