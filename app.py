@@ -28,15 +28,15 @@ html, body, [class*="stApp"] {
     width: 100%;
     background: #FAFAF7;
     z-index: 1000;
-    padding: 16px 30px;
+    padding: 14px 30px;
     border-bottom: 1px solid #ddd;
 }
 
 /* CONTENT */
 .content {
     margin-top: 90px;
-    margin-bottom: 90px;
-    padding: 0 40px;
+    margin-bottom: 120px;
+    padding: 0 35px;
 }
 
 /* CARD */
@@ -48,26 +48,44 @@ html, body, [class*="stApp"] {
     margin-bottom: 22px;
 }
 
+/* PRICE */
 .price {
     font-size: 18px;
     font-weight: 600;
 }
 
-/* PAGINATION */
-.pagination {
-    text-align: center;
-    font-weight: 500;
-}
-
-/* BOTTOM NAV */
+/* ANDROID BOTTOM NAV */
 .bottom-nav {
     position: fixed;
     bottom: 0;
     width: 100%;
     background: #FAFAF7;
     border-top: 1px solid #ddd;
-    padding: 12px 0;
+    padding: 10px 0;
     z-index: 1000;
+}
+
+.nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+}
+
+.nav-item.active {
+    color: #2E7D32;
+    font-weight: 600;
+}
+
+.nav-icon {
+    font-size: 22px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -104,6 +122,9 @@ if "page" not in st.session_state:
 if "filter" not in st.session_state:
     st.session_state.filter = "All"
 
+if "tab" not in st.session_state:
+    st.session_state.tab = "Home"
+
 ITEMS_PER_PAGE = 3
 
 # ----------------------------------
@@ -120,72 +141,119 @@ st.markdown("""
 # ----------------------------------
 st.markdown('<div class="content">', unsafe_allow_html=True)
 
-# FILTER (SAFE — DOES NOT RESET PAGE)
-filter_choice = st.radio(
-    "",
-    ["All", "Rent", "Sale"],
-    horizontal=True,
-    key="filter"
-)
+# ---------- HOME TAB ----------
+if st.session_state.tab == "Home":
 
-# FILTER DATA
-if st.session_state.filter == "All":
-    filtered_data = data
-else:
-    filtered_data = data[data["type"] == st.session_state.filter]
-
-# TOTAL PAGES (AFTER FILTER)
-total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
-
-# CLAMP PAGE
-st.session_state.page = max(1, min(st.session_state.page, total_pages))
-
-# SLICE DATA (THIS IS THE FIX)
-start = (st.session_state.page - 1) * ITEMS_PER_PAGE
-end = start + ITEMS_PER_PAGE
-page_data = filtered_data.iloc[start:end]
-
-# RENDER ONLY CURRENT PAGE
-for _, row in page_data.iterrows():
-    st.markdown(f"""
-    <div class="card">
-        <h4>🏡 {row['name']}</h4>
-        <p>📍 {row['location']}</p>
-        <p class="price">💰 ₱{int(row['price']):,}</p>
-        <p>📌 {row['type']}</p>
-    </div>
-    """, unsafe_allow_html=True)
-
-# PAGINATION CONTROLS
-c1, c2, c3 = st.columns([1, 2, 1])
-
-with c1:
-    if st.button("⬅ Prev", disabled=st.session_state.page == 1):
-        st.session_state.page -= 1
-        st.rerun()
-
-with c2:
-    st.markdown(
-        f"<div class='pagination'>Page {st.session_state.page} of {total_pages}</div>",
-        unsafe_allow_html=True
+    filter_choice = st.radio(
+        "",
+        ["All", "Rent", "Sale"],
+        horizontal=True,
+        key="filter"
     )
 
-with c3:
-    if st.button("Next ➡", disabled=st.session_state.page == total_pages):
-        st.session_state.page += 1
-        st.rerun()
+    if st.session_state.filter == "All":
+        filtered_data = data
+    else:
+        filtered_data = data[data["type"] == st.session_state.filter]
+
+    total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
+    st.session_state.page = max(1, min(st.session_state.page, total_pages))
+
+    start = (st.session_state.page - 1) * ITEMS_PER_PAGE
+    end = start + ITEMS_PER_PAGE
+    page_data = filtered_data.iloc[start:end]
+
+    for _, row in page_data.iterrows():
+        st.markdown(f"""
+        <div class="card">
+            <h4>🏡 {row['name']}</h4>
+            <p>📍 {row['location']}</p>
+            <p class="price">💰 ₱{int(row['price']):,}</p>
+            <p>📌 {row['type']}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c1:
+        if st.button("⬅ Prev", disabled=st.session_state.page == 1):
+            st.session_state.page -= 1
+            st.rerun()
+
+    with c2:
+        st.markdown(
+            f"<div style='text-align:center;'>Page {st.session_state.page} of {total_pages}</div>",
+            unsafe_allow_html=True
+        )
+
+    with c3:
+        if st.button("Next ➡", disabled=st.session_state.page == total_pages):
+            st.session_state.page += 1
+            st.rerun()
+
+# ---------- SEARCH TAB ----------
+elif st.session_state.tab == "Search":
+    st.subheader("🔍 Search")
+    query = st.text_input("Search by name or location")
+
+    results = data[
+        data["name"].str.contains(query, case=False) |
+        data["location"].str.contains(query, case=False)
+    ] if query else data
+
+    for _, row in results.iterrows():
+        st.markdown(f"""
+        <div class="card">
+            <h4>{row['name']}</h4>
+            <p>{row['location']}</p>
+            <p class="price">₱{int(row['price']):,}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+# ---------- SETTINGS TAB ----------
+elif st.session_state.tab == "Settings":
+    st.subheader("⚙️ Settings")
+    st.write("Support: support@restquest.com")
+    st.write("Post listing via email")
 
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ----------------------------------
-# BOTTOM NAV
+# ANDROID BOTTOM NAV
 # ----------------------------------
-st.markdown("""
+st.markdown(f"""
 <div class="bottom-nav">
-    <div style="display:flex; justify-content:space-around;">
-        <div>🏠 Home</div>
-        <div>🔍 Search</div>
-        <div>⚙️ Settings</div>
+    <div class="nav-items">
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Home' else ''}">
+            <div class="nav-icon">🏠</div>
+            Home
+        </div>
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Search' else ''}">
+            <div class="nav-icon">🔍</div>
+            Search
+        </div>
+
+        <div class="nav-item {'active' if st.session_state.tab == 'Settings' else ''}">
+            <div class="nav-icon">⚙️</div>
+            Settings
+        </div>
+
     </div>
 </div>
 """, unsafe_allow_html=True)
+
+# Invisible buttons over nav (click handling)
+c1, c2, c3 = st.columns(3)
+with c1:
+    if st.button("Home", key="nav_home"):
+        st.session_state.tab = "Home"
+        st.rerun()
+with c2:
+    if st.button("Search", key="nav_search"):
+        st.session_state.tab = "Search"
+        st.rerun()
+with c3:
+    if st.button("Settings", key="nav_settings"):
+        st.session_state.tab = "Settings"
+        st.rerun()
