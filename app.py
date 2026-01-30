@@ -29,14 +29,14 @@ html, body, [class*="stApp"] {
     width: 100%;
     background: #FAFAF7;
     z-index: 1000;
-    padding: 40px 30px;   /* ⬆ more padding so title isn't too high */
+    padding: 40px 30px;
     border-bottom: 1px solid #ddd;
     color: #000000;
 }
 
 /* CONTENT */
 .content {
-    margin-top: 140px;   /* ⬆ push content down to avoid overlap with header */
+    margin-top: 140px;
     margin-bottom: 120px;
     padding: 0 35px;
     color: #000000;
@@ -57,6 +57,31 @@ html, body, [class*="stApp"] {
     font-size: 18px;
     font-weight: 600;
     color: #000000;
+}
+
+/* RADIO BUTTONS */
+div[role="radiogroup"] > label {
+    display: inline-block;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 6px 16px;
+    margin-right: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    color: #000000;
+}
+
+div[role="radiogroup"] > label:hover {
+    background: #f0f0f0;
+}
+
+div[role="radiogroup"] input:checked + div {
+    background: #ff4b4b;
+    color: #fff;
+    border: 1px solid #ff4b4b;
+    border-radius: 20px;
+    padding: 6px 16px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -111,8 +136,8 @@ if st.session_state.tab == "Home":
 
     # ✅ Properly labeled radio buttons
     filter_choice = st.radio(
-        "🏷️ Filter listings by type",   # group label
-        ["All", "Rent", "Sale"],        # option labels
+        "🏷️ Filter listings by type",
+        ["All", "Rent", "Sale"],
         horizontal=True
     )
 
