@@ -69,7 +69,7 @@ div[role="radiogroup"] > label {
     margin-right: 8px;
     cursor: pointer;
     font-weight: 500;
-    color: #000000;   /* ✅ always black text */
+    color: #000000;
 }
 
 div[role="radiogroup"] > label:hover {
@@ -77,11 +77,23 @@ div[role="radiogroup"] > label:hover {
 }
 
 div[role="radiogroup"] input:checked + div {
-    background: #ffcccc;   /* ✅ lighter red background */
-    color: #000000;        /* ✅ keep text black */
+    background: #ffcccc;
+    color: #000000;
     border: 1px solid #ff4b4b;
     border-radius: 20px;
     padding: 6px 16px;
+}
+
+/* BUTTONS - Beige styling */
+button[kind="primary"], button[kind="secondary"] {
+    background-color: #F5F5DC !important;  /* ✅ beige */
+    color: #000000 !important;             /* black text */
+    border: 1px solid #d3d3b3 !important;  /* subtle border */
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+}
+button[kind="primary"]:hover, button[kind="secondary"]:hover {
+    background-color: #e5e5c4 !important;  /* darker beige on hover */
 }
 </style>
 """, unsafe_allow_html=True)
@@ -259,10 +271,4 @@ with nav_cols[0]:
         st.session_state.tab = "Home"
         st.rerun()
 with nav_cols[1]:
-    if st.button("🔍 Search", use_container_width=True):
-        st.session_state.tab = "Search"
-        st.rerun()
-with nav_cols[2]:
-    if st.button("⚙️ Settings", use_container_width=True):
-        st.session_state.tab = "Settings"
-        st.rerun()
+    if st.button("🔍 Search
