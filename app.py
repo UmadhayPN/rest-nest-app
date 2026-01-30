@@ -19,6 +19,7 @@ st.markdown("""
 html, body, [class*="stApp"] {
     background-color: #FAFAF7;
     font-family: 'Segoe UI', sans-serif;
+    color: #000000;   /* ✅ make all default text black */
 }
 
 /* HEADER */
@@ -30,6 +31,7 @@ html, body, [class*="stApp"] {
     z-index: 1000;
     padding: 14px 30px;
     border-bottom: 1px solid #ddd;
+    color: #000000;   /* ✅ header text black */
 }
 
 /* CONTENT */
@@ -37,6 +39,7 @@ html, body, [class*="stApp"] {
     margin-top: 90px;
     margin-bottom: 120px;
     padding: 0 35px;
+    color: #000000;   /* ✅ content text black */
 }
 
 /* CARD */
@@ -46,12 +49,14 @@ html, body, [class*="stApp"] {
     padding: 18px;
     box-shadow: 0 6px 14px rgba(0,0,0,0.06);
     margin-bottom: 22px;
+    color: #000000;   /* ✅ card text black */
 }
 
 /* PRICE */
 .price {
     font-size: 18px;
     font-weight: 600;
+    color: #000000;   /* ✅ price text black */
 }
 </style>
 """, unsafe_allow_html=True)
