@@ -159,6 +159,7 @@ if st.session_state.tab == "Home":
             <p>📍 {row['location']}</p>
             <p class="price">💰 ₱{row['price']:,}</p>
             <p>📌 {row['type']}</p>
+            <p>🛁 Bathrooms: {row['bathrooms']}</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -220,6 +221,8 @@ elif st.session_state.tab == "Search":
             <h4>{row['name']}</h4>
             <p>{row['location']}</p>
             <p class="price">₱{row['price']:,}</p>
+            <p>📌 {row['type']}</p>
+            <p>🛁 Bathrooms: {row['bathrooms']}</p>
         </div>
         """, unsafe_allow_html=True)
 
