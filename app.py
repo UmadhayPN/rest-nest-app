@@ -59,10 +59,18 @@ html, body, [class*="stApp"] {
     color: #000000;
 }
 
+/* RADIO GROUP BACKGROUND */
+div[role="radiogroup"] {
+    background-color: #f5f5dc;   /* ✅ beige background */
+    padding: 10px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
 /* RADIO BUTTONS */
 div[role="radiogroup"] > label {
     display: inline-block;
-    background: #fff;
+    background: #f5f5dc;         /* ✅ beige button background */
     border: 1px solid #ddd;
     border-radius: 20px;
     padding: 6px 16px;
@@ -73,13 +81,13 @@ div[role="radiogroup"] > label {
 }
 
 div[role="radiogroup"] > label:hover {
-    background: #f0f0f0;
+    background: #e5e5c4;         /* darker beige on hover */
 }
 
 div[role="radiogroup"] input:checked + div {
-    background: #ffcccc;
+    background: #e5e5c4;         /* selected beige */
     color: #000000;
-    border: 1px solid #ff4b4b;
+    border: 1px solid #b5b59c;
     border-radius: 20px;
     padding: 6px 16px;
 }
@@ -87,7 +95,7 @@ div[role="radiogroup"] input:checked + div {
 /* BUTTONS (Next + Bottom Nav) */
 button[kind="primary"], div.stButton > button {
     background-color: #f5f5dc !important;  /* ✅ beige */
-    color: #000000 !important;             /* black text */
+    color: #000000 !important;
     border: 1px solid #ddd !important;
     border-radius: 8px !important;
     padding: 6px 16px !important;
@@ -260,26 +268,4 @@ elif st.session_state.tab == "Settings":
     st.write("Support: support@restquest.com")
     st.write("Post listing via email")
 
-st.markdown('</div>', unsafe_allow_html=True)
-
-# ----------------------------------
-# SIMPLE BOTTOM NAV
-# ----------------------------------
-# ----------------------------------
-# SIMPLE BOTTOM NAV
-# ----------------------------------
-nav_cols = st.columns(3)
-with nav_cols[0]:
-    if st.button("🏠 Home", use_container_width=True):
-        st.session_state.tab = "Home"
-        st.rerun()
-with nav_cols[1]:
-    if st.button("🔍 Search", use_container_width=True):
-        st.session_state.tab = "Search"
-        st.rerun()
-with nav_cols[2]:
-    if st.button("⚙️ Settings", use_container_width=True):
-        st.session_state.tab = "Settings"
-        st.rerun()
-
-
+st.markdown('</div
