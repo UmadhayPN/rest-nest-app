@@ -53,43 +53,17 @@ html, body, [class*="stApp"] {
     font-size: 18px;
     font-weight: 600;
 }
-
-/* ANDROID BOTTOM NAV */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    background: #FAFAF7;
-    border-top: 1px solid #ddd;
-    padding: 10px 0;
-    z-index: 1000;
-}
-
-.nav-items {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-}
-
-.nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    font-size: 12px;
-    color: #888;
-    cursor: pointer;
-}
-
-.nav-item.active {
-    color: #2E7D32;
-    font-weight: 600;
-}
-
-.nav-icon {
-    font-size: 22px;
-}
 </style>
 """, unsafe_allow_html=True)
+
+# ----------------------------------
+# LOAD DATASET
+# ----------------------------------
+# ✅ Load your actual dataset
+data = pd.read_csv("PH_houses_v2.csv")
+
+# Expecting columns like: name, location, price, type
+# If column names differ, adjust accordingly
 
 # ----------------------------------
 # SESSION STATE
@@ -100,7 +74,7 @@ if "page" not in st.session_state:
 if "tab" not in st.session_state:
     st.session_state.tab = "Home"
 
-ITEMS_PER_PAGE = 3
+ITEMS_PER_PAGE = 10  # ✅ Show 10 houses per page
 
 # ----------------------------------
 # HEADER
@@ -125,11 +99,10 @@ if st.session_state.tab == "Home":
         horizontal=True
     )
 
-    # ✅ FIXED FILTER
     if filter_choice == "All":
         filtered_data = data
     else:
-        filtered_data = data[data["type"] == filter_choice]
+        filtered_data = data[data["type"].str.lower() == filter_choice.lower()]
 
     total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
     st.session_state.page = max(1, min(st.session_state.page, total_pages))
@@ -148,18 +121,17 @@ if st.session_state.tab == "Home":
         </div>
         """, unsafe_allow_html=True)
 
+    # Pagination controls
     c1, c2, c3 = st.columns([1, 2, 1])
     with c1:
         if st.button("⬅ Prev", disabled=st.session_state.page == 1):
             st.session_state.page -= 1
             st.rerun()
-
     with c2:
         st.markdown(
             f"<div style='text-align:center;'>Page {st.session_state.page} of {total_pages}</div>",
             unsafe_allow_html=True
         )
-
     with c3:
         if st.button("Next ➡", disabled=st.session_state.page == total_pages):
             st.session_state.page += 1
@@ -193,7 +165,7 @@ elif st.session_state.tab == "Settings":
 st.markdown('</div>', unsafe_allow_html=True)
 
 # ----------------------------------
-# ANDROID BOTTOM NAV (fixed)
+# SIMPLE BOTTOM NAV
 # ----------------------------------
 nav_cols = st.columns(3)
 with nav_cols[0]:
