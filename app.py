@@ -19,7 +19,7 @@ st.markdown("""
 html, body, [class*="stApp"] {
     background-color: #FAFAF7;
     font-family: 'Segoe UI', sans-serif;
-    color: #000000;   /* ✅ make all text black */
+    color: #000000;
 }
 
 /* HEADER */
@@ -66,12 +66,11 @@ html, body, [class*="stApp"] {
 # ----------------------------------
 data = pd.read_csv("PH_houses_v2.csv")
 
-# ✅ Clean price column to ensure numeric
 if "price" in data.columns:
     data["price"] = (
         data["price"]
         .astype(str)
-        .str.replace(r"[^0-9]", "", regex=True)  # remove ₱, commas, text
+        .str.replace(r"[^0-9]", "", regex=True)
         .replace("", "0")
         .astype(int)
     )
@@ -91,7 +90,7 @@ if "filter_type" not in st.session_state:
 if "price_range" not in st.session_state:
     st.session_state.price_range = (data['price'].min(), data['price'].max())
 
-ITEMS_PER_PAGE = 10  # ✅ Show 10 houses per page
+ITEMS_PER_PAGE = 10
 
 # ----------------------------------
 # HEADER
@@ -110,18 +109,16 @@ st.markdown('<div class="content">', unsafe_allow_html=True)
 # ---------- HOME TAB ----------
 if st.session_state.tab == "Home":
 
-    # ✅ Clearer filter label
-    st.markdown("**🏷️ Filter listings by type**")
+    # ✅ Properly labeled radio buttons
     filter_choice = st.radio(
-        label="",   # hide Streamlit’s default label
-        options=["All", "Rent", "Sale"],
+        "🏷️ Filter listings by type",   # group label
+        ["All", "Rent", "Sale"],        # option labels
         horizontal=True
     )
 
     if filter_choice == "All":
         filtered_data = data
     else:
-        # normalize case for robustness
         filtered_data = data[data["type"].str.lower() == filter_choice.lower()]
 
     total_pages = max(1, math.ceil(len(filtered_data) / ITEMS_PER_PAGE))
@@ -141,7 +138,7 @@ if st.session_state.tab == "Home":
         </div>
         """, unsafe_allow_html=True)
 
-    # Pagination controls
+    # Pagination
     c1, c2, c3 = st.columns([1, 2, 1])
     with c1:
         if st.button("⬅ Prev", disabled=st.session_state.page == 1):
