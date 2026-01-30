@@ -183,12 +183,30 @@ elif st.session_state.tab == "Search":
     st.subheader("🔍 Search")
     query = st.text_input("Search by name or location")
 
-    results = data[
-        data["name"].str.contains(query, case=False) |
-        data["location"].str.contains(query, case=False)
-    ] if query else data
+    # ✅ Price slider
+    price_min, price_max = int(data['price'].min()), int(data['price'].max())
+    st.session_state.price_range = st.slider(
+        "💰 Select price range",
+        min_value=price_min,
+        max_value=price_max,
+        value=(price_min, price_max),
+        step=10000
+    )
 
-    # ✅ Add pagination to Search results
+    # Apply filters
+    results = data[
+        (data["price"] >= st.session_state.price_range[0]) &
+        (data["price"] <= st.session_state.price_range[1]) &
+        (
+            data["name"].str.contains(query, case=False) |
+            data["location"].str.contains(query, case=False)
+        )
+    ] if query else data[
+        (data["price"] >= st.session_state.price_range[0]) &
+        (data["price"] <= st.session_state.price_range[1])
+    ]
+
+    # ✅ Pagination for Search
     total_pages = max(1, math.ceil(len(results) / ITEMS_PER_PAGE))
     st.session_state.page = max(1, min(st.session_state.page, total_pages))
 
