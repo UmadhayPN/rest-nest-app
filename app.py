@@ -69,7 +69,7 @@ div[role="radiogroup"] > label {
     margin-right: 8px;
     cursor: pointer;
     font-weight: 500;
-    color: #000000;   /* ✅ force label text to black */
+    color: #000000;   /* ✅ always black text */
 }
 
 div[role="radiogroup"] > label:hover {
@@ -77,8 +77,8 @@ div[role="radiogroup"] > label:hover {
 }
 
 div[role="radiogroup"] input:checked + div {
-    background: #ff4b4b;
-    color: #000000;   /* ✅ keep selected text black */
+    background: #ffcccc;   /* ✅ lighter red background */
+    color: #000000;        /* ✅ keep text black */
     border: 1px solid #ff4b4b;
     border-radius: 20px;
     padding: 6px 16px;
