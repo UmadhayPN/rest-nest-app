@@ -84,15 +84,15 @@ div[role="radiogroup"] input:checked + div {
     padding: 6px 16px;
 }
 
-/* BUTTONS - Beige styling */
-button[kind="primary"], button[kind="secondary"] {
-    background-color: #F5F5DC !important;  /* ✅ beige */
+/* BUTTONS (Next + Bottom Nav) */
+button[kind="primary"], div.stButton > button {
+    background-color: #f5f5dc !important;  /* ✅ beige */
     color: #000000 !important;             /* black text */
-    border: 1px solid #d3d3b3 !important;  /* subtle border */
+    border: 1px solid #ddd !important;
     border-radius: 8px !important;
-    font-weight: 600 !important;
+    padding: 6px 16px !important;
 }
-button[kind="primary"]:hover, button[kind="secondary"]:hover {
+button[kind="primary"]:hover, div.stButton > button:hover {
     background-color: #e5e5c4 !important;  /* darker beige on hover */
 }
 </style>
@@ -271,4 +271,4 @@ with nav_cols[0]:
         st.session_state.tab = "Home"
         st.rerun()
 with nav_cols[1]:
-    if st.button("🔍 Search
+    if st.button("🔍 Search", use_container_width=True):
