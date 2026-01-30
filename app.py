@@ -2,18 +2,16 @@ import streamlit as st
 import pandas as pd
 import math
 
-# ----------------------------------
 # CONFIG
-# ----------------------------------
+
 st.set_page_config(
     page_title="Rest Quest",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
 
-# ----------------------------------
 # CSS
-# ----------------------------------
+
 st.markdown("""
 <style>
 html, body, [class*="stApp"] {
@@ -61,7 +59,7 @@ html, body, [class*="stApp"] {
 
 /* RADIO GROUP BACKGROUND */
 div[role="radiogroup"] {
-    background-color: #f5f5dc;   /* ✅ beige background */
+    background-color: #f5f5dc;   /* beige background */
     padding: 10px;
     border-radius: 12px;
     display: inline-block;
@@ -70,7 +68,7 @@ div[role="radiogroup"] {
 /* RADIO BUTTONS */
 div[role="radiogroup"] > label {
     display: inline-block;
-    background: #f5f5dc;         /* ✅ beige button background */
+    background: #f5f5dc;         /* beige button background */
     border: 1px solid #ddd;
     border-radius: 20px;
     padding: 6px 16px;
@@ -94,7 +92,7 @@ div[role="radiogroup"] input:checked + div {
 
 /* BUTTONS (Next + Bottom Nav) */
 button[kind="primary"], div.stButton > button {
-    background-color: #f5f5dc !important;  /* ✅ beige */
+    background-color: #f5f5dc !important;  /* beige */
     color: #000000 !important;
     border: 1px solid #ddd !important;
     border-radius: 8px !important;
@@ -106,9 +104,9 @@ button[kind="primary"]:hover, div.stButton > button:hover {
 </style>
 """, unsafe_allow_html=True)
 
-# ----------------------------------
+
 # LOAD DATASET
-# ----------------------------------
+
 data = pd.read_csv("PH_houses_v2.csv")
 
 if "price" in data.columns:
@@ -123,7 +121,7 @@ else:
     st.error("CSV must contain a 'price' column.")
     st.stop()
 
-# ----------------------------------
+
 # SESSION STATE INITIALIZATION
 # ----------------------------------
 if "page" not in st.session_state:
@@ -137,18 +135,18 @@ if "price_range" not in st.session_state:
 
 ITEMS_PER_PAGE = 10
 
-# ----------------------------------
+
 # HEADER
-# ----------------------------------
+
 st.markdown("""
 <div class="header">
     <h2>🏠 Rest Quest</h2>
 </div>
 """, unsafe_allow_html=True)
 
-# ----------------------------------
+
 # CONTENT
-# ----------------------------------
+
 st.markdown('<div class="content">', unsafe_allow_html=True)
 
 # ---------- HOME TAB ----------
@@ -204,7 +202,7 @@ elif st.session_state.tab == "Search":
     st.subheader("🔍 Search")
     query = st.text_input("Search by name or location")
 
-    # ✅ Price slider
+    # Price slider
     price_min, price_max = int(data['price'].min()), int(data['price'].max())
     st.session_state.price_range = st.slider(
         "💰 Select price range",
@@ -227,7 +225,7 @@ elif st.session_state.tab == "Search":
         (data["price"] <= st.session_state.price_range[1])
     ]
 
-    # ✅ Pagination for Search
+    # Pagination for Search
     total_pages = max(1, math.ceil(len(results) / ITEMS_PER_PAGE))
     st.session_state.page = max(1, min(st.session_state.page, total_pages))
 
@@ -270,9 +268,9 @@ elif st.session_state.tab == "Settings":
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# ----------------------------------
-# SIMPLE BOTTOM NAV
-# ----------------------------------
+
+# BOTTOM NAV
+
 nav_cols = st.columns(3)
 with nav_cols[0]:
     if st.button("🏠 Home", use_container_width=True):
@@ -286,3 +284,4 @@ with nav_cols[2]:
     if st.button("⚙️ Settings", use_container_width=True):
         st.session_state.tab = "Settings"
         st.rerun()
+
