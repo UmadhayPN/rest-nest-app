@@ -75,13 +75,16 @@ else:
     st.stop()
 
 # ----------------------------------
-# SESSION STATE
+# SESSION STATE INITIALIZATION
 # ----------------------------------
 if "page" not in st.session_state:
     st.session_state.page = 1
-
 if "tab" not in st.session_state:
     st.session_state.tab = "Home"
+if "filter_type" not in st.session_state:
+    st.session_state.filter_type = "All"
+if "price_range" not in st.session_state:
+    st.session_state.price_range = (data['price'].min(), data['price'].max())
 
 ITEMS_PER_PAGE = 10  # ✅ Show 10 houses per page
 
